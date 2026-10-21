@@ -523,11 +523,11 @@ def _is_windows() -> bool:
 
 
 def stash_console_scripts(python_exe: str) -> list[tuple[Path, Path]]:
-    """Rename the ``octop`` launchers next to *python_exe* out of the way.
+    """Rename the ``ali``/``octop`` launchers next to *python_exe* out of the way.
 
     Windows refuses to delete or overwrite the executable backing a running
     process (``os error 32``), which makes pip and uv fail while rewriting
-    ``Scripts/octop.exe`` during ``octop update``. Renaming the file is still
+    ``Scripts/ali.exe`` during ``ali update``. Renaming the file is still
     permitted, so the installer gets a free path and the running process keeps
     its handle. Returns the ``(original, stash)`` pairs that were moved.
     """
@@ -536,7 +536,11 @@ def stash_console_scripts(python_exe: str) -> list[tuple[Path, Path]]:
     script_dir = Path(python_exe).parent
     _purge_stale_stashes(script_dir)
     moved: list[tuple[Path, Path]] = []
-    for script in sorted(script_dir.glob(f"{_PACKAGE_NAME}*.exe")):
+    scripts = sorted(script_dir.glob(f"{_PACKAGE_NAME}*.exe"))
+    ali_launcher = script_dir / "ali.exe"
+    if ali_launcher.is_file():
+        scripts.append(ali_launcher)
+    for script in scripts:
         stash = script.with_name(script.name + _STASH_SUFFIX)
         try:
             script.replace(stash)
@@ -1044,7 +1048,7 @@ def _run_managed_upgrade(
         if cmd is None:
             return UpgradeResult(
                 success=False,
-                error="pip is not available for the Octop virtual environment.",
+                error="pip is not available for the Alienvador virtual environment.",
                 mirror_errors=mirror_errors,
             )
         fast_path = installer == "pip" and target is not None

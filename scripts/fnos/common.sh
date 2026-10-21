@@ -53,7 +53,7 @@ octop_wait_pids_gone() {
     return 1
 }
 
-# bin/octop 会 exec 成 python -m octop.cli.main run，命令行不再含启动器路径。
+# bin/ali（旧版为 bin/octop）会 exec 成 python -m octop.cli.main run，命令行不再含启动器路径。
 # 用安装时写入的 OCTOP_INSTALL_MODE=fpk-native 识别本包服务进程。
 octop_fpk_native_run_pids() {
     local pid
@@ -107,7 +107,7 @@ free_octop_ports() {
     done
 
     appdir="${TRIM_APPDEST:-/var/apps/octop-native}"
-    for pat in "$appdir/bin/octop" "$appdir/app/bin/octop"; do
+    for pat in "$appdir/bin/ali" "$appdir/app/bin/ali" "$appdir/bin/octop" "$appdir/app/bin/octop"; do
         pids="$(pgrep -f -- "$pat" 2>/dev/null | tr '\n' ' ')" || true
         [ -z "$pids" ] && continue
         echo "[octop] 发现本应用残留服务进程（$pat）: $pids，准备清理" > "${TRIM_TEMP_LOGFILE:-/dev/null}" 2>&1 || true
@@ -295,7 +295,7 @@ EOF
 # 管理员密码：生成 / 校验 / 凭据回落保存。
 #
 # 背景（issue #502）：src/octop/infra/users/password.py 的弱密码黑名单包含
-# "octop123"，而 FPK 旧版把初始密码写死为 Octop123，导致 octop init 在首次
+# "octop123"，而 FPK 旧版把初始密码写死为 Octop123，导致 ali init 在首次
 # 启动时报 "password is too common" 直接退出、应用永远起不来。这里的函数
 # 让安装向导接管密码设置：用户自定义（先本地校验，杜绝无效密码进入 init）
 # 或自动生成随机强密码，并回落保存到数据目录，保证用户不丢密码。
@@ -659,12 +659,12 @@ APPLIED="${OCTOP_HOME}/.fnos-wizard-password-applied"
 if [ ! -f "${OCTOP_HOME}/octop.db" ]; then
     echo "[fnos-boot] 首次初始化，使用安装向导密码 ..."
     if [ -n "$DISPLAY_NAME" ]; then
-        octop init --yes \
+        ali init --yes \
             --admin-username "$USER_NAME" \
             --admin-password "$PASSWORD" \
             --admin-display-name "$DISPLAY_NAME"
     else
-        octop init --yes \
+        ali init --yes \
             --admin-username "$USER_NAME" \
             --admin-password "$PASSWORD"
     fi

@@ -19,7 +19,7 @@ BROWSER_PROFILES_REL = "browser-profiles"
 
 
 def parse_octop_user_id(raw: object) -> int | None:
-    """Return a positive Octop ``users.id``, or ``None`` if *raw* is unusable."""
+    """Return a positive Alienvador ``users.id``, or ``None`` if *raw* is unusable."""
     if isinstance(raw, bool) or not isinstance(raw, (int, str)):
         return None
     try:
@@ -49,7 +49,7 @@ def agent_outbound_screenshots_dir(workspace_dir: Path) -> Path:
 
 
 def legacy_harness_profiles_dir() -> Path:
-    """Pre-Octop default: ``~/.harness-browser/profiles``."""
+    """Pre-Alienvador default: ``~/.harness-browser/profiles``."""
     return Path.home() / ".harness-browser" / "profiles"
 
 

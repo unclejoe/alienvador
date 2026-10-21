@@ -263,7 +263,7 @@ export default function SetupPage() {
                     ? publicUrl("logo_horizontal_white.png")
                     : publicUrl("logo_horizontal_dark.png")
                 }
-                alt="Octop"
+                alt="Alienvador"
                 className={styles.wizardHeaderLogo}
               />
               <div className={styles.wizardHeaderBrandText}>

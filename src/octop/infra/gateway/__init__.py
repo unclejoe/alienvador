@@ -1,1 +1,1 @@
-"""Octop Gateway — global AI interaction entry point."""
+"""Alienvador Gateway — global AI interaction entry point."""

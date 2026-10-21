@@ -49,9 +49,9 @@ else
     BOLD="" GREEN="" YELLOW="" RED="" RESET=""
 fi
 
-info()  { printf "${GREEN}[octop]${RESET} %s\n" "$*"; }
-warn()  { printf "${YELLOW}[octop]${RESET} %s\n" "$*"; }
-error() { printf "${RED}[octop]${RESET} %s\n" "$*" >&2; }
+info()  { printf "${GREEN}[ali]${RESET} %s\n" "$*"; }
+warn()  { printf "${YELLOW}[ali]${RESET} %s\n" "$*"; }
+error() { printf "${RED}[ali]${RESET} %s\n" "$*" >&2; }
 die()   { error "$@"; exit 1; }
 
 # ── 解析参数 ──────────────────────────────────────────────────────────────────
@@ -123,7 +123,7 @@ case "$OS" in
     *) die "Unsupported OS: $OS. Use install.ps1 or install.bat on Windows." ;;
 esac
 
-printf "${GREEN}[octop]${RESET} Installing Octop into ${BOLD}%s${RESET}\n" "$OCTOP_HOME"
+printf "${GREEN}[ali]${RESET} Installing Octop into ${BOLD}%s${RESET}\n" "$OCTOP_HOME"
 
 # ── 步骤 1: 确保 uv 可用 ────────────────────────────────────────────────────
 _install_uv_via_pip() {
@@ -944,16 +944,20 @@ fi
 # ── 步骤 4: 创建包装脚本 ─────────────────────────────────────────────────────
 mkdir -p "$OCTOP_BIN"
 
-cat > "$OCTOP_BIN/octop" << 'WRAPPER'
+cat > "$OCTOP_BIN/ali" << 'WRAPPER'
 #!/usr/bin/env bash
-# Octop CLI 包装脚本 — 委托给 uv 管理的环境。
+# Alienvador CLI 包装脚本 — 委托给 uv 管理的环境。
 set -euo pipefail
 
 OCTOP_HOME="${OCTOP_HOME:-$HOME/.octop}"
-REAL_BIN="$OCTOP_HOME/venv/bin/octop"
+if [ -x "$OCTOP_HOME/venv/bin/ali" ]; then
+    REAL_BIN="$OCTOP_HOME/venv/bin/ali"
+else
+    REAL_BIN="$OCTOP_HOME/venv/bin/octop"
+fi
 
 if [ ! -x "$REAL_BIN" ]; then
-    echo "Error: Octop environment not found in $OCTOP_HOME/venv" >&2
+    echo "Error: Alienvador environment not found in $OCTOP_HOME/venv" >&2
     echo "Please re-run the installer" >&2
     exit 1
 fi
@@ -961,8 +965,8 @@ fi
 exec "$REAL_BIN" "$@"
 WRAPPER
 
-chmod +x "$OCTOP_BIN/octop"
-info "Wrapper script created: $OCTOP_BIN/octop"
+chmod +x "$OCTOP_BIN/ali"
+info "Wrapper script created: $OCTOP_BIN/ali"
 
 # ── 步骤 5: 让 octop 立即可用（无需 source）──────────────────────────────────
 # 子进程无法修改父 shell 的 PATH。要让 curl|bash / bash install.sh 后立刻可用，
@@ -976,8 +980,8 @@ _can_write_dir() {
 _try_symlink() {
     # 在 target_dir 创建指向包装脚本的 octop 符号链接。成功返回 0。
     local target_dir="$1"
-    local link_path="$target_dir/octop"
-    local src="$OCTOP_BIN/octop"
+    local link_path="$target_dir/ali"
+    local src="$OCTOP_BIN/ali"
 
     mkdir -p "$target_dir" 2>/dev/null || true
 
@@ -1014,7 +1018,7 @@ _link_into_existing_path() {
     local dir
     for dir in "${candidates[@]}"; do
         if _path_contains "$dir" && _try_symlink "$dir"; then
-            LINKED_PATH="$dir/octop"
+            LINKED_PATH="$dir/ali"
             return 0
         fi
     done
@@ -1022,7 +1026,7 @@ _link_into_existing_path() {
     # 回退：~/.local/bin（Ubuntu/Debian 的 ~/.profile 会在目录存在时加入 PATH；
     # 若当前会话 PATH 尚无该目录，仍无法免 source，仅作持久化兜底）
     if _try_symlink "$HOME/.local/bin"; then
-        LINKED_PATH="$HOME/.local/bin/octop"
+        LINKED_PATH="$HOME/.local/bin/ali"
         if _path_contains "$HOME/.local/bin"; then
             return 0
         fi
@@ -1035,7 +1039,7 @@ _link_into_existing_path() {
 IMMEDIATE_OK=false
 if _link_into_existing_path; then
     IMMEDIATE_OK=true
-    info "Linked to ${LINKED_PATH} (octop works in the current shell)"
+    info "Linked to ${LINKED_PATH} (ali works in the current shell)"
 elif [ -n "$LINKED_PATH" ]; then
     info "Linked to $LINKED_PATH"
 fi
@@ -1130,10 +1134,10 @@ fi
 echo ""
 
 if [ "$IMMEDIATE_OK" = true ]; then
-    info "octop is ready to use in the current shell (no source needed)"
+    info "ali is ready to use in the current shell (no source needed)"
 elif [ -n "${BASH_SOURCE[0]:-}" ] && [ "${BASH_SOURCE[0]}" != "$0" ]; then
     export PATH="$OCTOP_BIN:$PATH"
-    info "PATH updated; octop is available now"
+    info "PATH updated; ali is available now"
 else
     warn "Could not write to a directory already in PATH (e.g. /usr/local/bin). In this shell run:"
     echo ""
@@ -1146,9 +1150,9 @@ fi
 echo ""
 echo "Then run:"
 echo ""
-printf "  ${BOLD}octop run${RESET}       # Run in the foreground (API + Web console)\n"
-printf "  ${BOLD}octop service start${RESET}  # Install and run in the background (systemd / launchd)\n"
+printf "  ${BOLD}ali run${RESET}        # Run in the foreground (API + Web console)\n"
+printf "  ${BOLD}ali service start${RESET}   # Install and run in the background (systemd / launchd)\n"
 printf "  ${BOLD}open http://127.0.0.1:8088${RESET}\n"
 echo ""
-printf "Upgrade: re-run this installer. Cleanup: ${BOLD}octop clean${RESET}\n"
+printf "Upgrade: re-run this installer. Cleanup: ${BOLD}ali clean${RESET}\n"
 printf "Playwright Chromium (optional): ${BOLD}$OCTOP_VENV/bin/python -m playwright install chromium${RESET}\n"

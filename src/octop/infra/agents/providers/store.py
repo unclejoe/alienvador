@@ -1,4 +1,4 @@
-"""Read Octop DB provider rows and build harness ``ProviderConfig`` objects."""
+"""Read Alienvador DB provider rows and build harness ``ProviderConfig`` objects."""
 
 from __future__ import annotations
 

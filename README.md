@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/readme-banner.png" alt="Octop Banner" width="600" />
+  <img src="docs/assets/readme-banner.png" alt="Alienvador Banner" width="600" />
 </p>
 
 <p align="center">
@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="https://trendshift.io/repositories/95504?utm_source=repository-badge&utm_medium=badge&utm_campaign=badge-repository-95504" target="_blank" rel="noopener noreferrer">
-    <img src="https://trendshift.io/api/badge/repositories/95504" alt="TencentCloud/Octop | Trendshift" width="250" height="55" />
+    <img src="https://trendshift.io/api/badge/repositories/95504" alt="TencentCloud/Alienvador | Trendshift" width="250" height="55" />
   </a>
 </p>
 
@@ -39,7 +39,7 @@
 
 ---
 
-**Octop** is an open-source, self-hosted AI assistant. It's not just a tool — it's a digital life form that can operate in parallel. Through its multi-agent architecture, it builds an intelligent environment that is both independent and collaborative for teams, families, and individuals. Best of all, it runs entirely on your machine — the fully self-hosted design means privacy is never a compromise, while single-process startup makes the powerful web console, CLI, and IM integrations readily accessible.
+**Alienvador** is an open-source, self-hosted AI assistant. It's not just a tool — it's a digital life form that can operate in parallel. Through its multi-agent architecture, it builds an intelligent environment that is both independent and collaborative for teams, families, and individuals. Best of all, it runs entirely on your machine — the fully self-hosted design means privacy is never a compromise, while single-process startup makes the powerful web console, CLI, and IM integrations readily accessible.
 
 Chat through the Web Dashboard, Feishu, DingTalk, QQ, WeChat, Telegram, Discord, WeCom, or programmatic HTTP/SSE/WebSocket. Extend capabilities with the **expert library**, **Connectors** (OAuth + MCP), and **ACP** integration for IDE workflows.
 
@@ -48,30 +48,30 @@ Chat through the Web Dashboard, Feishu, DingTalk, QQ, WeChat, Telegram, Discord,
 | | Feature | Description |
 |---|---------|-------------|
 | 👥 | **Multi-user expert team** | One admin, shared household; built-in expert library and expert market — switch specialists per scenario |
-| 🤝 | **Cloud collaboration** | Link this Octop to another instance to browse peer experts and chat across instances; history stays on the expert's side |
+| 🤝 | **Cloud collaboration** | Link this Alienvador to another instance to browse peer experts and chat across instances; history stays on the expert's side |
 | 🎭 | **MBTI personas** | 16 personality templates plus an interactive quiz — give each agent a distinct character |
 | 🎯 | **AgentTeams** *(Beta)* | A coordinator schedules multiple experts on multi-step work; [details](docs/expert-teams.md) |
 | 🔒 | **Security built-in** | JWT multi-user isolation, tool approval, shell command guardrails, and PII redaction — data stays local |
 | 🔌 | **Connector ecosystem** | Tencent suite (Docs, Meeting, News, …); OAuth and MCP gateway extend resource boundaries — [supported connectors](docs/connectors.md) |
 | 💾 | **Pluggable workspace backends** | Local disk, Docker sandbox, PostgreSQL, or COS/S3 for agent files — separate from the control-plane DB |
-| 🧠 | **Portable memory** | Powered by [Octop Memory](https://github.com/TencentCloud/octop-memory); memory migrates with the workspace |
+| 🧠 | **Portable memory** | Powered by [Alienvador Memory](https://github.com/TencentCloud/octop-memory); memory migrates with the workspace |
 | 📚 | **Knowledge base** | RAG over your documents; share corpora within a deployment and ground answers in your private data |
-| 🧩 | **Plugins** | Extend Octop with third-party plugins; bundled plugins are seeded and toggled on demand |
-| ↔️ | **ACP bidirectional** | `octop acp` for IDE/terminal AI; delegate to OpenCode / Claude Code with permission gates |
+| 🧩 | **Plugins** | Extend Alienvador with third-party plugins; bundled plugins are seeded and toggled on demand |
+| ↔️ | **ACP bidirectional** | `ali acp` for IDE/terminal AI; delegate to OpenCode / Claude Code with permission gates |
 | 💻 | **Terminal AI+** | Interactive shell in the browser — AI-assisted command execution and troubleshooting |
 | 🌐 | **Browser AI+** | Headless Chromium sessions for web automation, screenshots, and remote browsing |
 | 🖥️ | **Remote desktop** | Live screen and input from the dashboard on Linux, Windows, and macOS — remote office work and GUI apps; one-click isolated desktop on headless Linux |
 | 🪟 | **Desktop client** | Native Windows / macOS / Linux apps (and FnOS packages) alongside the web dashboard |
-| 🏠 | **Self-hosted** | Dashboard, CLI, IM channels, and cron in one `octop run` — all data under `~/.octop/` |
+| 🏠 | **Self-hosted** | Dashboard, CLI, IM channels, and cron in one `ali run` — all data under `~/.octop/` |
 
 ## 📌 Overview
 
-Octop is a self-hosted AI assistant platform for households and small teams. It runs a single process that serves a web dashboard, a CLI, IM channels (Feishu, DingTalk, QQ, WeChat, Telegram, Discord, WeCom, and more), and cron automation — all sharing one control-plane database under `~/.octop/` (SQLite by default; PostgreSQL optional).
+Alienvador is a self-hosted AI assistant platform for households and small teams. It runs a single process that serves a web dashboard, a CLI, IM channels (Feishu, DingTalk, QQ, WeChat, Telegram, Discord, WeCom, and more), and cron automation — all sharing one control-plane database under `~/.octop/` (SQLite by default; PostgreSQL optional).
 
-> Octop's design goal: keep every conversation, workspace, and credential on your own machine, while giving each user a personal team of specialized agents they can switch between per task.
+> Alienvador's design goal: keep every conversation, workspace, and credential on your own machine, while giving each user a personal team of specialized agents they can switch between per task.
 
 <details>
-<summary>🐾 What can you do with Octop</summary>
+<summary>🐾 What can you do with Alienvador</summary>
 
 - **Personal assistant** — let a dedicated agent write weekly reports, organize notes, and manage your schedule; memory persists with the workspace.
 - **Family sharing** — one admin account, the whole household; assign different agents and experts per member; share experts and knowledge bases when useful.
@@ -88,28 +88,28 @@ Octop is a self-hosted AI assistant platform for households and small teams. It 
 |-------|-----------|
 | **Language** | Python 3.12+ |
 | **Web framework** | FastAPI + uvicorn |
-| **Agent runtime** | [Octop Harness](https://github.com/TencentCloud/octop-harness) |
-| **Gateway** | [Octop Gateway](https://github.com/TencentCloud/octop-gateway) |
+| **Agent runtime** | [Alienvador Harness](https://github.com/TencentCloud/octop-harness) |
+| **Gateway** | [Alienvador Gateway](https://github.com/TencentCloud/octop-gateway) |
 | **Control plane DB** | SQLite (WAL, default) or PostgreSQL (optional) |
 | **Frontend** | React 18 + TypeScript + Vite + Ant Design |
 | **Scheduling** | APScheduler |
 | **ACP** | agent-client-protocol |
 | **Build / quality** | hatchling · ruff · mypy · pytest |
 
-Octop is built on the Octop Harness stack — a set of focused runtimes that Octop composes into one process:
+Alienvador is built on the Alienvador Harness stack — a set of focused runtimes that Alienvador composes into one process:
 
-- **[Octop Harness](https://github.com/TencentCloud/octop-harness)** — Agent runtime: model routing, tools, skills, and conversation checkpointing.
-- **[Octop Gateway](https://github.com/TencentCloud/octop-gateway)** — multi-platform IM channel bridge that normalizes incoming messages into a single processing pipeline.
-- **[Octop Memory](https://github.com/TencentCloud/octop-memory)** — hierarchical recall with full-text search, so an agent's memory travels with its workspace.
-- **[Octop Browser](https://github.com/TencentCloud/octop-browser)** — CDP-based browser automation with persistent profiles for web tasks.
+- **[Alienvador Harness](https://github.com/TencentCloud/octop-harness)** — Agent runtime: model routing, tools, skills, and conversation checkpointing.
+- **[Alienvador Gateway](https://github.com/TencentCloud/octop-gateway)** — multi-platform IM channel bridge that normalizes incoming messages into a single processing pipeline.
+- **[Alienvador Memory](https://github.com/TencentCloud/octop-memory)** — hierarchical recall with full-text search, so an agent's memory travels with its workspace.
+- **[Alienvador Browser](https://github.com/TencentCloud/octop-browser)** — CDP-based browser automation with persistent profiles for web tasks.
 
-Instead of an external queue or message broker, Octop routes every surface — Web UI, IM, and cron — through one in-process `HarnessProcessor`. The result is a single, restart-safe process whose entire state is rebuilt from the control-plane database on boot (local SQLite by default; PostgreSQL optional).
+Instead of an external queue or message broker, Alienvador routes every surface — Web UI, IM, and cron — through one in-process `HarnessProcessor`. The result is a single, restart-safe process whose entire state is rebuilt from the control-plane database on boot (local SQLite by default; PostgreSQL optional).
 
 ## 🤔 Features
 
 ### Server & auth
 - Multi-user JWT authentication with admin role
-- First-run setup wizard (`octop init`)
+- First-run setup wizard (`ali init`)
 - Interactive API docs at `/api/docs` (off by default — set `"enable_api_docs": true` in `config.json` to enable)
 
 ### Experts
@@ -127,24 +127,24 @@ Instead of an external queue or message broker, Octop routes every surface — W
 ### Surfaces
 - **Web dashboard** — chat, experts / teams, connectors, channels, cron, knowledge, plugins, settings
 - **Desktop client** — native apps for Windows / macOS / Linux; FnOS packages for NAS
-- **CLI** — `octop run`, `octop chats`, `octop acp`, admin commands
+- **CLI** — `ali run`, `ali chats`, `ali acp`, admin commands
 - **HTTP/SSE/WebSocket API** — full programmatic access
 - **Remote desktop** — dashboard control of the host desktop session
 
 ### Knowledge & plugins
 - **Knowledge base** — RAG over your documents; optional sharing within the same deployment
-- **Plugins** — install and manage third-party plugins (`octop plugin`); bundled plugins are seeded and toggled on demand from the dashboard
+- **Plugins** — install and manage third-party plugins (`ali plugin`); bundled plugins are seeded and toggled on demand from the dashboard
 
 ### ACP (Agent Client Protocol)
 
-Octop supports ACP in two directions:
+Alienvador supports ACP in two directions:
 
-1. **Inbound** — external tools use **your** Octop agent
+1. **Inbound** — external tools use **your** Alienvador agent
    ```bash
-   octop acp --agent main   # stdio ACP server for Zed, OpenCode, …
+   ali acp --agent main   # stdio ACP server for Zed, OpenCode, …
    ```
 
-2. **Outbound** — Octop delegates to external coding agents
+2. **Outbound** — Alienvador delegates to external coding agents
    - Dashboard → **ACP** (`/acp`): configure runners (global per user)
    - Enable **acp_runner** per agent, then delegate in chat
 
@@ -170,9 +170,9 @@ Here are our mid-to-long term plans:
 - [ ] **Self-evolution** — automatically distill everyday conversations into reusable skills, so the assistant grows with you.
 - [ ] **Managed Agents** — platform-hosted agent lifecycle (provision, scale, and operate agents without managing the full self-hosted stack yourself).
 - [ ] **Project** — project-scoped workspaces that group agents, files, and conversations around a shared goal.
-- [ ] **Cloud–edge continuum** — run Octop locally while offloading selected tasks to the cloud, so light work stays on-device and heavier jobs use remote capacity when you need it.
-- [ ] **Plugin marketplace** — a curated market to discover, install, and update third-party plugins without leaving Octop.
-- [ ] **Conversational control plane** — deepen Octop’s own skills so chat can cover the full dashboard surface: create experts, wire channels, manage knowledge bases, and scaffold plugins end-to-end.
+- [ ] **Cloud–edge continuum** — run Alienvador locally while offloading selected tasks to the cloud, so light work stays on-device and heavier jobs use remote capacity when you need it.
+- [ ] **Plugin marketplace** — a curated market to discover, install, and update third-party plugins without leaving Alienvador.
+- [ ] **Conversational control plane** — deepen Alienvador’s own skills so chat can cover the full dashboard surface: create experts, wire channels, manage knowledge bases, and scaffold plugins end-to-end.
 
 This roadmap may shift as the community grows; treat it as indicative only.
 
@@ -213,7 +213,7 @@ source ~/.zshrc   # Zsh
 source ~/.bashrc  # Bash
 ```
 
-The installer places `octop` on your PATH via `~/.octop/bin`. Optional extras:
+The installer places `ali` on your PATH via `~/.octop/bin`. Optional extras:
 
 ```bash
 # Download Playwright Chromium for browser automation (skipped if a system Chrome/Chromium is already present)
@@ -226,10 +226,10 @@ See [scripts/README.md](scripts/README.md) for all install options (`--version`,
 
 | Platform | Artifact |
 |----------|----------|
-| Windows | `Octop-desktop-windows-amd64-<version>.exe` (64-bit) / `Octop-desktop-windows-arm64-<version>.exe` (ARM64) — NSIS installer |
-| macOS | `Octop-desktop-darwin-arm64-<version>.dmg` (Apple Silicon) / `Octop-desktop-darwin-amd64-<version>.dmg` (Intel) |
-| Linux | `Octop-desktop-linux-amd64-<version>.tar.gz` / `Octop-desktop-linux-arm64-<version>.tar.gz` |
-| FnOS NAS | `Octop-fnos-docker-<version>.fpk` (recommended on ARM; amd64/arm64 image) / `Octop-fnos-native-<version>.fpk` (x86_64, no Docker) / `Octop-fnos-native-arm64-<version>.fpk` (ARM64 fallback if no Docker) — install via App Center |
+| Windows | `Alienvador-desktop-windows-amd64-<version>.exe` (64-bit) / `Alienvador-desktop-windows-arm64-<version>.exe` (ARM64) — NSIS installer |
+| macOS | `Alienvador-desktop-darwin-arm64-<version>.dmg` (Apple Silicon) / `Alienvador-desktop-darwin-amd64-<version>.dmg` (Intel) |
+| Linux | `Alienvador-desktop-linux-amd64-<version>.tar.gz` / `Alienvador-desktop-linux-arm64-<version>.tar.gz` |
+| FnOS NAS | `Alienvador-fnos-docker-<version>.fpk` (recommended on ARM; amd64/arm64 image) / `Alienvador-fnos-native-<version>.fpk` (x86_64, no Docker) / `Alienvador-fnos-native-arm64-<version>.fpk` (ARM64 fallback if no Docker) — install via App Center |
 
 See [desktop/README.md](desktop/README.md) for the desktop shell and [fnos/README.md](fnos/README.md) for the FnOS packaging guide.
 
@@ -252,7 +252,7 @@ uv sync --extra local-embedding
 ### 2. Initialize
 
 ```bash
-octop init
+ali init
 ```
 
 The interactive wizard creates the SQLite database, JWT secret, and first admin account under `~/.octop/`.
@@ -261,16 +261,16 @@ The interactive wizard creates the SQLite database, JWT secret, and first admin 
 
 ```bash
 # Foreground (API + Web dashboard)
-octop run
+ali run
 
 # Custom host / port
-octop run --host 0.0.0.0 --port 8088
+ali run --host 0.0.0.0 --port 8088
 
 # Register as a system service (systemd / launchd / Windows service)
-octop service start
+ali service start
 ```
 
-Open **http://127.0.0.1:8088**. With Docker, a valid `OCTOP_DEFAULT_PASSWORD` creates the admin on first boot (credentials in `/data/.octop/credential.txt`); if it is unset or rejected, open the setup wizard (unlock password in `/data/.octop/octop-login.txt`). Interactive `octop init` / the setup wizard asks you to choose a password (≥8 characters, letters and digits).
+Open **http://127.0.0.1:8088**. With Docker, a valid `OCTOP_DEFAULT_PASSWORD` creates the admin on first boot (credentials in `/data/.octop/credential.txt`); if it is unset or rejected, open the setup wizard (unlock password in `/data/.octop/octop-login.txt`). Interactive `ali init` / the setup wizard asks you to choose a password (≥8 characters, letters and digits).
 
 ### Docker (recommended for production)
 
@@ -355,13 +355,13 @@ All install scripts provision an isolated environment at `~/.octop/venv` and a `
 
 ### Upgrade
 
-`octop update` replaces only the wheel/binary — your `~/.octop/` database, workspaces, secrets, and `config.json` are preserved:
+`ali update` replaces only the wheel/binary — your `~/.octop/` database, workspaces, secrets, and `config.json` are preserved:
 
 ```bash
-octop update          # fetch and install the latest octop, then restart the service if one is registered
+ali update          # fetch and install the latest octop, then restart the service if one is registered
 ```
 
-The schema migrates automatically on next boot; run `octop init` only if the setup wizard prompts for a migration. Always back up first (`octop backup`) before a cross-version upgrade.
+The schema migrates automatically on next boot; run `ali init` only if the setup wizard prompts for a migration. Always back up first (`ali backup`) before a cross-version upgrade.
 
 ## ⚙️ Configuration
 
@@ -369,27 +369,27 @@ All runtime state lives in `~/.octop/`. Manage it via CLI or edit files directly
 
 ```bash
 # LLM providers and models
-octop models
-octop provider list
+ali models
+ali provider list
 
 # IM channels
-octop channel list
-octop channel install
+ali channel list
+ali channel install
 
 # Skills (per agent)
-octop skills list --agent main
+ali skills list --agent main
 
 # Cron jobs
-octop cron list
-octop cron create --help
+ali cron list
+ali cron create --help
 
 # Users (admin)
-octop user list
+ali user list
 ```
 
 ### Supported LLM providers
 
-OpenAI-compatible APIs, DashScope (Qwen), Ollama, and other presets — configure per agent in the dashboard or via `octop provider`.
+OpenAI-compatible APIs, DashScope (Qwen), Ollama, and other presets — configure per agent in the dashboard or via `ali provider`.
 
 ### Supported channels
 
@@ -416,24 +416,24 @@ Full catalog, auth kinds, and MCP modes: **[docs/connectors.md](docs/connectors.
 
 | Command | Description |
 |---------|-------------|
-| `octop init` | Bootstrap `~/.octop/` (DB, admin, JWT secret) |
-| `octop run` | Start Octop in the foreground |
-| `octop service start` | Install and start as a system service |
-| `octop service stop` | Stop the system service |
-| `octop agent` | Create, list, start/stop agents |
-| `octop channel` | Install and manage IM channels |
-| `octop chats` | REPL and session management |
-| `octop acp` | Stdio ACP server for IDE integration |
-| `octop cron` | Manage scheduled tasks |
-| `octop models` | Provider presets and model resolution |
-| `octop skills` | Enable/disable per-agent skills |
-| `octop plugin` | Install and manage third-party plugins |
-| `octop backup` | Export / restore backups |
-| `octop clean` | Remove CLI state or wipe `~/.octop/` |
-| `octop memory list` | List running agents eligible for memory maintenance; no database changes. |
-| `octop memory slim [--agent ID]` | Back up and slim SQLite memory through the running host; uses the selected agent or prompts by number. Shows terminal and dashboard progress. [Details](docs/memory-slim.md) |
-| `octop memory slim --all` | Sequentially maintain all eligible running agents, with per-agent progress; stops on the first failure. |
-| `octop update` | Check for and install updates |
+| `ali init` | Bootstrap `~/.octop/` (DB, admin, JWT secret) |
+| `ali run` | Start Alienvador in the foreground |
+| `ali service start` | Install and start as a system service |
+| `ali service stop` | Stop the system service |
+| `ali agent` | Create, list, start/stop agents |
+| `ali channel` | Install and manage IM channels |
+| `ali chats` | REPL and session management |
+| `ali acp` | Stdio ACP server for IDE integration |
+| `ali cron` | Manage scheduled tasks |
+| `ali models` | Provider presets and model resolution |
+| `ali skills` | Enable/disable per-agent skills |
+| `ali plugin` | Install and manage third-party plugins |
+| `ali backup` | Export / restore backups |
+| `ali clean` | Remove CLI state or wipe `~/.octop/` |
+| `ali memory list` | List running agents eligible for memory maintenance; no database changes. |
+| `ali memory slim [--agent ID]` | Back up and slim SQLite memory through the running host; uses the selected agent or prompts by number. Shows terminal and dashboard progress. [Details](docs/memory-slim.md) |
+| `ali memory slim --all` | Sequentially maintain all eligible running agents, with per-agent progress; stops on the first failure. |
+| `ali update` | Check for and install updates |
 
 In signed-in dashboard or local CLI chat, `/memory slim` explains maintenance for the current agent;
 `/memory slim --all` lists your eligible agents. Add `--confirm` to start after reviewing the impact.
@@ -444,10 +444,10 @@ Full reference: **[docs/cli.md](docs/cli.md)**.
 
 ## 🖥️ Web dashboard
 
-After `octop run`, open **http://127.0.0.1:8088**.
+After `ali run`, open **http://127.0.0.1:8088**.
 
 <p align="center">
-  <img src="docs/assets/readme-chat.png" alt="Octop Web Dashboard" width="800" />
+  <img src="docs/assets/readme-chat.png" alt="Alienvador Web Dashboard" width="800" />
 </p>
 
 - **Chat** — real-time conversation with experts and teams
@@ -475,7 +475,7 @@ Interactive API docs: **http://127.0.0.1:8088/api/docs** (disabled by default �
 ├── security/tool_guard/           # shell command allow/deny rules
 ├── logs/                          # runtime logs
 ├── venv/                          # uv-managed Python (installer layout)
-└── bin/octop                      # PATH wrapper → venv/bin/octop
+└── bin/ali                       # PATH wrapper → venv/bin/ali (legacy: octop)
 ```
 
 The control plane can also use PostgreSQL — set `database` in `config.json`, or `OCTOP_DATABASE_*` / the first-run wizard. With PostgreSQL, agent memory reuses the same DSN by default (per-agent schema); to keep file-based memory, set `"memory": { "backend": { "type": "sqlite" } }` in the agent config. See [docs/configuration.md](docs/configuration.md) and [docs/adr/002-database-backends.md](docs/adr/002-database-backends.md).
@@ -566,11 +566,11 @@ See [CHANGELOG.md](CHANGELOG.md) for release history.
 
 | Project | Description |
 |---------|-------------|
-| [Octop Harness](https://github.com/TencentCloud/octop-harness) | Agent runtime — model routing, tools, skills, checkpointing |
-| [Octop Gateway](https://github.com/TencentCloud/octop-gateway) | Multi-platform IM channel bridge |
-| [Octop Memory](https://github.com/TencentCloud/octop-memory) | Hierarchical recall and FTS search |
-| [Octop Browser](https://github.com/TencentCloud/octop-browser) | CDP browser automation with persistent profiles |
-| [Octop Pet](https://github.com/jubaoliang/OctopPet) | A desktop pet for Octop |
+| [Alienvador Harness](https://github.com/TencentCloud/octop-harness) | Agent runtime — model routing, tools, skills, checkpointing |
+| [Alienvador Gateway](https://github.com/TencentCloud/octop-gateway) | Multi-platform IM channel bridge |
+| [Alienvador Memory](https://github.com/TencentCloud/octop-memory) | Hierarchical recall and FTS search |
+| [Alienvador Browser](https://github.com/TencentCloud/octop-browser) | CDP browser automation with persistent profiles |
+| [Alienvador Pet](https://github.com/jubaoliang/OctopPet) | A desktop pet for Alienvador |
 
 ## 💬 Community
 
