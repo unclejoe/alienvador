@@ -215,7 +215,7 @@ async def check_for_updates(
         return await asyncio.to_thread(
             _build_status,
             latest=None,
-            error="could not reach PyPI",
+            error="update source unreachable or has no releases yet",
             error_code="pypi_unreachable",
             stable_only=stable_only,
             include_prerelease=True,

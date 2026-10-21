@@ -3864,7 +3864,7 @@
       "networkError": "无法连接更新服务器，请检查网络。",
       "mirrorSource": "版本信息来自镜像 {{source}}，可能略滞后于官方源。",
       "errors": {
-        "pypi_unreachable": "无法连接 PyPI，请检查网络后重试。"
+        "pypi_unreachable": "无法连接更新源，请检查网络后重试；也可能是更新源还没有发布版本。"
       },
       "notChecked": "尚未检查",
       "stageStarting": "启动中...",

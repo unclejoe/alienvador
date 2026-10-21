@@ -3864,7 +3864,7 @@
       "networkError": "Could not reach update server. Check your network.",
       "mirrorSource": "Version info served by mirror {{source}}; it may lag slightly behind pypi.org.",
       "errors": {
-        "pypi_unreachable": "Could not reach PyPI. Check your network and try again."
+        "pypi_unreachable": "Could not reach the update source. Check your network, or the source may have no releases yet."
       },
       "notChecked": "Not checked yet",
       "stageStarting": "Starting...",

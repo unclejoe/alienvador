@@ -29,7 +29,11 @@ from octop.infra.utils.paths import PathLayout
 logger = logging.getLogger(__name__)
 
 _PACKAGE_NAME = "octop"
-_PYPI_URL = f"https://pypi.org/pypi/{_PACKAGE_NAME}/json"
+# Update source: this fork's GitHub Releases (tags ``vX.Y.Z`` carrying an
+# ``octop-*.whl`` asset). Override with ``OCTOP_UPDATE_REPO`` if the fork
+# moves. The PyPI mirror flow further below remains as an install fallback.
+_RELEASE_REPO = os.environ.get("OCTOP_UPDATE_REPO", "unclejoe/alienvador")
+_GITHUB_RELEASES_URL = f"https://api.github.com/repos/{_RELEASE_REPO}/releases"
 _PYPI_SIMPLE = "https://pypi.org/simple"
 _PYPI_UA = {"User-Agent": f"{_PACKAGE_NAME}-updater/1.0"}
 _GREEN_PACKAGES_ENV = "OCTOP_GREEN_PACKAGES"
@@ -181,26 +185,6 @@ def fetch_latest_pypi_version(
     return info.latest_stable
 
 
-def _usable_release_versions(data: dict[str, Any]) -> list[str]:
-    """Return PyPI ``releases`` keys that are not fully yanked."""
-    releases = data.get("releases")
-    if not isinstance(releases, dict):
-        return []
-    versions: list[str] = []
-    for raw_ver, files in releases.items():
-        ver = str(raw_ver)
-        if not ver:
-            continue
-        if (
-            isinstance(files, list)
-            and files
-            and all(isinstance(item, dict) and item.get("yanked") for item in files)
-        ):
-            continue
-        versions.append(ver)
-    return versions
-
-
 def pick_latest_versions(versions: list[str]) -> tuple[str | None, str | None]:
     """Return ``(latest_any, latest_stable)`` using PEP 440 order."""
     usable = [ver for ver in versions if ver]
@@ -212,72 +196,80 @@ def pick_latest_versions(versions: list[str]) -> tuple[str | None, str | None]:
     return latest_any, latest_stable
 
 
-def _pypi_json_url(version: str | None = None) -> str:
-    if not version:
-        return _PYPI_URL
-    encoded = urllib.parse.quote(version, safe="")
-    return f"https://pypi.org/pypi/{_PACKAGE_NAME}/{encoded}/json"
-
-
-def _load_pypi_json(url: str, timeout: int) -> dict[str, Any]:
+def _load_json(url: str, timeout: int) -> Any:
     req = urllib.request.Request(url, headers=_PYPI_UA)
     with urllib.request.urlopen(req, timeout=timeout) as resp:
-        payload: dict[str, Any] = json.loads(resp.read().decode("utf-8"))
-    return payload
+        return json.loads(resp.read().decode("utf-8"))
 
 
-def _description_for_version(
-    version: str,
-    fallback: str | None,
-    timeout: int,
-) -> str | None:
-    """Return the long description uploaded with *version*.
-
-    Warehouse's unversioned ``/pypi/<name>/json`` ``info`` object is the latest
-    *stable* release. Pre-release changelogs only appear on
-    ``/pypi/<name>/<version>/json``.
-    """
-    try:
-        data = _load_pypi_json(_pypi_json_url(version), timeout)
-        description = data["info"].get("description")
-        if isinstance(description, str) and description.strip():
-            return description
-    except (urllib.error.URLError, TimeoutError, KeyError, json.JSONDecodeError) as exc:
-        logger.warning("failed to fetch PyPI description for %s: %s", version, exc)
-    return fallback
+_VERSION_TAG_RE = re.compile(r"^v?(\d+(?:\.\d+)+[A-Za-z0-9.+!]*)$")
 
 
 def fetch_pypi_info(timeout: int = 10) -> PyPIInfo | None:
-    """Fetch version and long description from the PyPI JSON API.
+    """Fetch the newest versions and release notes from the fork's GitHub Releases.
 
-    ``version`` is the newest release including pre-releases. ``latest_stable``
-    is the newest non-pre-release (None when the index only has pre-releases).
-    Returns None on any network or parse failure.
+    ``version`` is the newest release tag including pre-releases;
+    ``latest_stable`` is the newest non-pre-release (None when only
+    pre-releases exist). ``description`` is the release body of the newest
+    version. Returns None on any network or parse failure.
     """
     try:
-        data = _load_pypi_json(_PYPI_URL, timeout)
-        info = data["info"]
-        versions = _usable_release_versions(data)
-        info_version = str(info["version"])
-        if info_version and info_version not in versions:
-            versions.append(info_version)
+        entries = _load_json(f"{_GITHUB_RELEASES_URL}?per_page=100", timeout)
+        if not isinstance(entries, list):
+            raise TypeError("releases payload is not a list")
+        versions: list[str] = []
+        bodies: dict[str, str] = {}
+        for entry in entries:
+            if not isinstance(entry, dict):
+                continue
+            match = _VERSION_TAG_RE.match(str(entry.get("tag_name") or "").strip())
+            if match is None:
+                continue
+            ver = match.group(1)
+            versions.append(ver)
+            body = entry.get("body")
+            if isinstance(body, str) and body.strip():
+                bodies[ver] = body
         latest_any, latest_stable = pick_latest_versions(versions)
         if latest_any is None:
-            latest_any = info_version
-            latest_stable = info_version if not is_prerelease(info_version) else None
-        raw_description = info.get("description")
-        description = raw_description if isinstance(raw_description, str) else None
-        if latest_any and latest_any != info_version:
-            description = _description_for_version(latest_any, description, timeout)
+            return None
         return PyPIInfo(
             version=latest_any,
             latest_stable=latest_stable,
-            description=description,
-            source="pypi.org",
+            description=bodies.get(latest_any),
+            source=f"github:{_RELEASE_REPO}",
         )
-    except (urllib.error.URLError, TimeoutError, KeyError, json.JSONDecodeError) as exc:
-        logger.warning("failed to fetch PyPI info: %s", exc)
+    except (urllib.error.URLError, TimeoutError, TypeError, ValueError, OSError) as exc:
+        logger.warning("failed to fetch release info from %s: %s", _RELEASE_REPO, exc)
         return None
+
+
+def release_wheel_url(version: str, timeout: int = 10) -> str | None:
+    """Return the ``octop`` wheel asset URL for *version* from the fork releases."""
+    prefix = f"{_PACKAGE_NAME}-{version}-"
+    for tag in (f"v{version}", version):
+        try:
+            entry = _load_json(f"{_GITHUB_RELEASES_URL}/tags/{tag}", timeout)
+        except urllib.error.HTTPError as exc:
+            if exc.code == 404:
+                continue
+            logger.warning("release lookup %s@%s failed: %s", _RELEASE_REPO, tag, exc)
+            return None
+        except (urllib.error.URLError, TimeoutError, ValueError, OSError) as exc:
+            logger.warning("release lookup %s@%s failed: %s", _RELEASE_REPO, tag, exc)
+            return None
+        if not isinstance(entry, dict):
+            continue
+        for asset in entry.get("assets") or []:
+            if not isinstance(asset, dict):
+                continue
+            name = str(asset.get("name") or "")
+            if name.startswith(prefix) and name.endswith(".whl"):
+                url = asset.get("browser_download_url")
+                if isinstance(url, str) and url:
+                    return url
+        return None
+    return None
 
 
 def parse_changelog_for_version(description: str | None, version: str) -> str | None:
@@ -474,12 +466,18 @@ def build_upgrade_command(
     index_url: str = "",
     allow_prerelease: bool = False,
     version: str | None = None,
+    wheel_url: str = "",
 ) -> list[str] | None:
+    """Build the pip/uv command for one upgrade attempt.
+
+    ``wheel_url`` installs a specific release artifact (fork GitHub Release
+    asset) directly; index/prerelease options only apply to index installs.
+    """
     target = green_packages_dir()
     target_args: list[str] = []
     if target is not None:
         target_args = ["--target", str(target)]
-    requirement = package_requirement(version)
+    requirement = wheel_url or package_requirement(version)
 
     if installer == "uv":
         uv_exe = find_uv_executable()
@@ -493,9 +491,10 @@ def build_upgrade_command(
             "--upgrade-package",
             _PACKAGE_NAME,
         ]
-        if index_url:
+        if index_url and not wheel_url:
             cmd.extend(["--index-url", index_url])
-        append_prerelease_flags(cmd, installer, allow_prerelease=allow_prerelease)
+        if not wheel_url:
+            append_prerelease_flags(cmd, installer, allow_prerelease=allow_prerelease)
         cmd.append(requirement)
         return cmd
 
@@ -511,9 +510,10 @@ def build_upgrade_command(
             if not standalone:
                 return None
             cmd = [standalone, "install", *upgrade_flags, *target_args]
-    if index_url:
+    if index_url and not wheel_url:
         cmd.extend(["-i", index_url])
-    append_prerelease_flags(cmd, installer, allow_prerelease=allow_prerelease)
+    if not wheel_url:
+        append_prerelease_flags(cmd, installer, allow_prerelease=allow_prerelease)
     cmd.append(requirement)
     return cmd
 
@@ -1032,6 +1032,45 @@ def _run_managed_upgrade(
     venv_python = resolve_venv_python()
     local_ver = get_local_version()
     target = green_packages_dir()
+
+    # Preferred path: install the exact wheel published on the fork's GitHub
+    # Release. Falls through to the PyPI mirror flow when the release (or its
+    # wheel asset) cannot be resolved.
+    target_version = version
+    if not target_version:
+        info = fetch_pypi_info()
+        target_version = info.version if info else None
+    if target_version:
+        wheel_url = release_wheel_url(target_version)
+        if wheel_url:
+            cmd = build_upgrade_command(
+                installer,
+                venv_python,
+                wheel_url=wheel_url,
+                version=target_version,
+            )
+            if cmd is None:
+                return UpgradeResult(
+                    success=False,
+                    error="pip is not available for the Alienvador virtual environment.",
+                )
+            rc, err_snippet = _run_install_cmd(
+                cmd,
+                f"github:{_RELEASE_REPO}",
+                verbose=verbose,
+                timeout=float(_INSTALL_TIMEOUT_S),
+            )
+            if rc == 0:
+                result = _verify_upgrade(
+                    local_ver, venv_python, [], version=target_version, locale=locale
+                )
+                if result.success:
+                    return result
+                err_snippet = result.error or tr("update.version_unavailable", locale)
+            return _all_mirrors_failed(
+                [f"github:{_RELEASE_REPO}: {err_snippet or 'unknown error'}"]
+            )
+
     ordered, mirror_errors = rank_install_indexes(version)
     fallback_deadline: float | None = None
 
