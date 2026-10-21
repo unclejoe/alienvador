@@ -3,10 +3,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import AvatarDropdown from "../components/AvatarDropdown";
+import BrandWordmark from "../components/BrandWordmark";
 import CurrentVersionBadge from "../components/CurrentVersionBadge";
 import { ArrowLeftRight, ChevronDown, PanelLeftClose, X } from "lucide-react";
 import cx from "classnames";
-import { useTheme } from "../context/ThemeContext";
 import { useLayoutMode } from "../context/LayoutModeContext";
 import { useDesktopChromeStyle } from "../hooks/useDesktopChrome";
 import { useUserRole } from "../hooks/useUserRole";
@@ -31,7 +31,6 @@ import {
   railShortcutLabel,
 } from "../utils/railShortcuts";
 import { preferencesApi } from "../api/modules/preferences";
-import { publicUrl } from "../utils/publicUrl";
 import {
   COLLAPSED_WIDTH,
   EXPANDED_WIDTH,
@@ -420,7 +419,6 @@ export default function Sidebar({
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
-  const { isDark } = useTheme();
   const role = useUserRole();
   const user = useCurrentUser();
   const setUser = useSetCurrentUser();
@@ -476,10 +474,6 @@ export default function Sidebar({
   // macOS traffic lights sit above the brand; Windows already has its own
   // caption row, so the logo starts at the top of the rail.
   const reserveTrafficLightBand = desktopChrome === "mac";
-  const wordmarkSrc = isDark
-    ? publicUrl("logo_horizontal_white.png")
-    : publicUrl("logo_horizontal_dark.png");
-
   const selectMinimalPane = useCallback(
     (pane: MinimalNavPane, opts?: { expand?: boolean }) => {
       setMinimalPane(pane);
@@ -520,18 +514,18 @@ export default function Sidebar({
   const brandInner = (
     <>
       <img
-        src={isRailCollapsed ? publicUrl("logo_mark.svg") : wordmarkSrc}
-        alt="Octop"
-        className={isRailCollapsed ? styles.brandMarkCollapsed : undefined}
+        src="/pwa-192.png"
+        alt="Alienvador"
         style={{
-          height: isRailCollapsed ? 26 : isMobile ? 38 : 36,
-          width: "auto",
-          maxWidth: isRailCollapsed ? 36 : isMobile ? 190 : 160,
+          height: isRailCollapsed ? 32 : 30,
+          width: isRailCollapsed ? 32 : 30,
           objectFit: "contain",
           display: "block",
           flexShrink: 0,
+          borderRadius: 8,
         }}
       />
+      {!isRailCollapsed && <BrandWordmark size={isMobile ? 13 : 15} />}
       {!isRailCollapsed && !isMobile && (
         /* Let the version badges shrink without squeezing the wordmark. */
         <div className={styles.brandMeta}>

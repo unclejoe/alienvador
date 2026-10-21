@@ -195,7 +195,7 @@ async def _stream_command(
 
 
 class LayaRuntime:
-    """One managed Laya install for this Octop home."""
+    """One managed Laya install for this Alienvador home."""
 
     def __init__(
         self,

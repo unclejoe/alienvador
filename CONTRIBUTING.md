@@ -1,6 +1,6 @@
-# Contributing to Octop
+# Contributing to Alienvador
 
-Thank you for your interest in contributing! Octop is the control-plane application in the [Octop Harness](https://github.com/TencentCloud) ecosystem.
+Thank you for your interest in contributing! Alienvador is the control-plane application in the [Alienvador Harness](https://github.com/TencentCloud) ecosystem.
 
 ## Getting started
 
@@ -164,7 +164,7 @@ Branch from `main` → PR into `main` (tag if shipping a patch) → PR into `dev
 
 # 贡献指南
 
-感谢你对 Octop 的关注！Octop 是 [Octop Harness](https://github.com/TencentCloud) 生态中的可自托管 AI 助手平台，支持多用户与多 Agent。
+感谢你对 Alienvador 的关注！Alienvador 是 [Alienvador Harness](https://github.com/TencentCloud) 生态中的可自托管 AI 助手平台，支持多用户与多 Agent。
 
 ## 环境搭建
 

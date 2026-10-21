@@ -1,4 +1,4 @@
-"""Octop helpers for harness ``type: "docker"`` backend specs."""
+"""Alienvador helpers for harness ``type: "docker"`` backend specs."""
 
 from __future__ import annotations
 

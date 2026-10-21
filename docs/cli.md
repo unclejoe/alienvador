@@ -1,17 +1,17 @@
 # CLI Reference
 
-`octop` is a single Click app installed as `octop` on `pip install octop`.
+`ali` is a single Click app installed as `ali` on `pip install octop`.
 It is registered in `src/octop/cli/main.py`; commands are loaded
 lazily from `src/octop/cli/registry.py`.
 
 ```
-$ octop --help
-Usage: octop [OPTIONS] COMMAND [ARGS]...
+$ ali --help
+Usage: ali [OPTIONS] COMMAND [ARGS]...
 
-  Octop command-line interface.
+  Alienvador command-line interface.
 
 Options:
-  -v, --version           Show the installed octop version.
+  -v, --version           Show the installed ali version.
   --user TEXT             Default --user for subcommands (admin acting on behalf
                           of a user). [env: OCTOP_USER]
   --agent TEXT            Default --agent for subcommands. [env: OCTOP_AGENT]
@@ -19,19 +19,19 @@ Options:
   -h, --help              Show this message and exit.
 
 Commands:
-  acp        Run Octop agent as ACP server (stdio).
+  acp        Run Alienvador agent as ACP server (stdio).
   admin      Admin commands.
   agent      Agent lifecycle commands.
-  backup     Export and restore Octop backups.
-  bridge     Manage remote Octop bridge peers.
-  chat       [deprecated] Alias for `octop chats`.
+  backup     Export and restore Alienvador backups.
+  bridge     Manage remote Alienvador bridge peers.
+  chat       [deprecated] Alias for `ali chats`.
   chats      Chat REPL and session management.
   channel    Channel management commands.
   clean      Remove CLI state or wipe all of ~/.octop.
   completion Shell completion utilities.
   config     CLI state (base URL, defaults).
   cron       Cron job management commands.
-  init       Bootstrap an Octop server install.
+  init       Bootstrap an Alienvador server install.
   migrate    Migrate an OpenClaw or Hermes Agent setup into an expert.
   models     Model catalog and active-model settings.
   plugin     Install and manage plugins.
@@ -39,13 +39,13 @@ Commands:
   run        Run octop-server in the foreground.
   service    System service lifecycle (start/stop/restart/status).
   skills     Per-agent skill enable/disable.
-  update     Check for and install a newer Octop release.
+  update     Check for and install a newer Alienvador release.
   user       User management commands.
-  version    Show the installed octop version.
+  version    Show the installed ali version.
 ```
 
 > **Tip.** Regenerate the per-subcommand listings below with
-> `make docs-cli` (each `octop <cmd> --help` is captured to stdout).
+> `make docs-cli` (each `ali <cmd> --help` is captured to stdout).
 
 ## Global options
 
@@ -58,27 +58,27 @@ Commands:
 
 ## Transport layers
 
-Octop commands pick one of these transports:
+Alienvador commands pick one of these transports:
 
 | Layer | When | Login? | Examples |
 |-------|------|--------|----------|
 | **Offline** (local DB only) | Need to read/write `~/.octop` without a running server | No | `init`, `backup`, `plugin`, `agent list`, `chats list/get/create/update/delete`, `cron list`, `user *`, `admin overview/audit`, `models presets/list/active`, `bridge list/get` |
-| **Attach** (HTTP / WS) | Need a live `octop run` process (IM, streams, model pulls) | Yes (`octop user login`) | `chats send/repl`, `channel test/probe`, `models ollama-*`, `skills enable/disable`, `provider test` |
-| **Embedded** (in-process) | CLI boots `OctopServer` for a single command | No | `octop acp`, `octop chats repl`, `octop chats send` (defaults to embedded), `octop agent create/from-expert/start/stop/reload` |
+| **Attach** (HTTP / WS) | Need a live `ali run` process (IM, streams, model pulls) | Yes (`ali user login`) | `chats send/repl`, `channel test/probe`, `models ollama-*`, `skills enable/disable`, `provider test` |
+| **Embedded** (in-process) | CLI boots `OctopServer` for a single command | No | `ali acp`, `ali chats repl`, `ali chats send` (defaults to embedded), `ali agent create/from-expert/start/stop/reload` |
 | **Embedded (bridge)** | In-process `BridgeManager` (no full server); CLI cannot keep the WS after exit | No | `bridge probe/create/patch/delete/connect/disconnect/agents` |
 
 The dashboards and HTTP callers manage their own JWTs and do **not**
 share `~/.octop/cli_state.json`.
 
-## `octop init`
+## `ali init`
 
 Bootstrap a fresh install (DB migrations, JWT secret, first admin).
 Idempotent on the DB; pass `--force` to delete application state under `~/.octop` first. The install runtime (`venv/`, `bin/`) is kept.
 
 ```
-Usage: octop init [OPTIONS]
+Usage: ali init [OPTIONS]
 
-  Bootstrap an Octop server (~/.octop dir, DB migrations, JWT secret, first admin).
+  Bootstrap an Alienvador server (~/.octop dir, DB migrations, JWT secret, first admin).
 
 Options:
   --admin-username TEXT       [env: OCTOP_ADMIN_USERNAME]
@@ -89,15 +89,15 @@ Options:
   -h, --help                  Show this message and exit.
 ```
 
-## `octop run`
+## `ali run`
 
 Start the FastAPI app in the foreground (delegates to
 `octop.launch.run_foreground_blocking`).
 
 ```
-Usage: octop run [OPTIONS]
+Usage: ali run [OPTIONS]
 
-  Start the Octop server (foreground; uvicorn).
+  Start the Alienvador server (foreground; uvicorn).
 
 Options:
   --host TEXT                 Override OCTOP_BIND_HOST.
@@ -110,17 +110,17 @@ Options:
   -h, --help                  Show this message and exit.
 ```
 
-## `octop service`
+## `ali service`
 
-Install and manage the Octop system service. The backend is detected
+Install and manage the Alienvador system service. The backend is detected
 automatically (systemd on Linux, launchd on macOS); the scope
 (`user` vs `system`) can be forced via `--scope` or
 `OCTOP_SERVICE_SCOPE`.
 
 ```
-Usage: octop service [OPTIONS] COMMAND [ARGS]...
+Usage: ali service [OPTIONS] COMMAND [ARGS]...
 
-  Manage the Octop system service (systemd on Linux, launchd on macOS).
+  Manage the Alienvador system service (systemd on Linux, launchd on macOS).
 
 Commands:
   start     Install (if missing) and start the service.
@@ -133,21 +133,21 @@ Commands:
 on failure.
 
 On Linux, `start` and `restart` install a systemd drop-in
-(`octop.service.d/10-nofile.conf`) with `LimitNOFILE=65535` (user
+(`ali.service.d/10-nofile.conf`) with `LimitNOFILE=65535` (user
 units are capped to the process hard rlimit so systemd cannot fail to
 spawn). The main unit file is not rewritten unless it is missing or
 you pass `--force-install`. `restart` always runs `systemctl restart`
 even if writing the drop-in fails, so an upgrade that only restarts
 still comes back. To undo: delete the drop-in, then
-`systemctl daemon-reload && systemctl restart octop`.
+`systemctl daemon-reload && systemctl restart ali`.
 
-## `octop user`
+## `ali user`
 
 Local-DB user management. `login` requires a running server; the
 rest are offline.
 
 ```
-Usage: octop user [OPTIONS] COMMAND [ARGS]...
+Usage: ali user [OPTIONS] COMMAND [ARGS]...
 
   User management commands (local DB; no server login required).
 
@@ -161,13 +161,13 @@ Commands:
   login     Login against a running server; stores JWT for optional remote HTTP attach.
 ```
 
-## `octop agent`
+## `ali agent`
 
 Lifecycle and templates. Most commands boot an embedded
 `OctopServer` to operate on the local DB without a remote round-trip.
 
 ```
-Usage: octop agent [OPTIONS] COMMAND [ARGS]...
+Usage: ali agent [OPTIONS] COMMAND [ARGS]...
 
   Agent lifecycle commands.
 
@@ -187,14 +187,14 @@ Commands:
 agents on behalf of another user. `use` writes the agent id into
 `~/.octop/cli_state.json` so subsequent commands default to it.
 
-## `octop chats`
+## `ali chats`
 
 Thread CRUD + interactive REPL. The REPL and `send` use an embedded
-server (no separate `octop run` needed); `list` / `get` / `create` /
+server (no separate `ali run` needed); `list` / `get` / `create` /
 `update` / `delete` work fully offline against `~/.octop/octop.db`.
 
 ```
-Usage: octop chats [OPTIONS] COMMAND [ARGS]...
+Usage: ali chats [OPTIONS] COMMAND [ARGS]...
 
   Thread list/history and interactive chat (CLI channel / local DB).
 
@@ -208,21 +208,21 @@ Commands:
   repl        Interactive chat REPL (embedded server + CLI gateway channel).
 ```
 
-`octop chat` is a deprecated alias that prints a stderr warning and
+`ali chat` is a deprecated alias that prints a stderr warning and
 forwards to `chats`.
 
-## `octop bridge`
+## `ali bridge`
 
-User-scoped Octop-to-Octop peer links (same surface as Dashboard **远程桥接**).
+User-scoped Alienvador-to-Alienvador peer links (same surface as Dashboard **远程桥接**).
 `--user` / pinned `default_user` selects the local owner. `--peer-user` is
 the **remote** login. `probe` talks HTTP only; `create --connect` /
 `connect` / `agents` verify the Bridge WebSocket then close it — start
-`octop run` to keep a link alive (auto-reconnect).
+`ali run` to keep a link alive (auto-reconnect).
 
 ```
-Usage: octop bridge [OPTIONS] COMMAND [ARGS]...
+Usage: ali bridge [OPTIONS] COMMAND [ARGS]...
 
-  Manage remote Octop bridge peers (add / edit / probe / connect).
+  Manage remote Alienvador bridge peers (add / edit / probe / connect).
 
 Commands:
   list        List saved bridge connections.
@@ -241,14 +241,14 @@ Commands:
 is omitted. `create` always needs the remote password: pass
 `--peer-password` or type it at the hidden prompt.
 
-## `octop channel`
+## `ali channel`
 
 Local DB channel CRUD plus platform-specific bot creators. The
 `wecom` / `weixin` / `feishu-setup` subcommands drive the QR-code
 bot-creator flows; `config` is the offline config editor.
 
 ```
-Usage: octop channel [OPTIONS] COMMAND [ARGS]...
+Usage: ali channel [OPTIONS] COMMAND [ARGS]...
 
   Channel management commands.
 
@@ -264,14 +264,14 @@ Commands:
   bind          Bind-group helper for WeCom / Weixin (QR login, etc.).
 ```
 
-## `octop cron`
+## `ali cron`
 
-Local DB cron management. `run-now` requires a running `octop run`
+Local DB cron management. `run-now` requires a running `ali run`
 because the actual fire is dispatched through the live
 `CronManager`.
 
 ```
-Usage: octop cron [OPTIONS] COMMAND [ARGS]...
+Usage: ali cron [OPTIONS] COMMAND [ARGS]...
 
   Cron job management commands.
 
@@ -291,12 +291,12 @@ list. `--task-type text` pushes the prompt verbatim; `--task-type
 agent` (default) runs the LLM and pushes the reply. `--prompt` is
 required, must be non-empty and ≤ 2000 characters.
 
-## `octop provider`
+## `ali provider`
 
 Local DB provider CRUD. `test` requires a running server.
 
 ```
-Usage: octop provider [OPTIONS] COMMAND [ARGS]...
+Usage: ali provider [OPTIONS] COMMAND [ARGS]...
 
   Provider management commands (local DB).
 
@@ -307,12 +307,12 @@ Commands:
   test      Ping the provider (requires running server).
 ```
 
-## `octop models`
+## `ali models`
 
 Provider presets and active model management.
 
 ```
-Usage: octop models [OPTIONS] COMMAND [ARGS]...
+Usage: ali models [OPTIONS] COMMAND [ARGS]...
 
   Model catalog and active-model settings.
 
@@ -326,14 +326,14 @@ Commands:
   ollama-rm     Remove a local Ollama model (requires a running server).
 ```
 
-## `octop skills`
+## `ali skills`
 
 Per-agent skill enable / disable. All subcommands need a running
 server (the dashboard's Skill Hub and bundled `~/.octop/skills/`
 library are queried at boot).
 
 ```
-Usage: octop skills [OPTIONS] COMMAND [ARGS]...
+Usage: ali skills [OPTIONS] COMMAND [ARGS]...
 
   Manage agent skills (enable / disable / list).
 
@@ -344,13 +344,13 @@ Commands:
   config    Show / edit the per-agent skills config.
 ```
 
-## `octop admin`
+## `ali admin`
 
 Local DB admin operations. `rotate-jwt-secret` works without a
 running server (it edits the SQLite secret row directly).
 
 ```
-Usage: octop admin [OPTIONS] COMMAND [ARGS]...
+Usage: ali admin [OPTIONS] COMMAND [ARGS]...
 
   Admin commands (local DB).
 
@@ -361,7 +361,7 @@ Commands:
   rotate-jwt-secret    Rotate the JWT secret directly via the local DB.
 ```
 
-## `octop captcha`
+## `ali captcha`
 
 Login captcha maintenance against the local database. Works fully offline
 (edits the SQLite settings row directly) — the escape hatch for when a
@@ -370,7 +370,7 @@ not allowlisted) locks everyone out of the dashboard, since the settings
 UI itself requires login to reach.
 
 ```
-Usage: octop captcha [OPTIONS] COMMAND [ARGS]...
+Usage: ali captcha [OPTIONS] COMMAND [ARGS]...
 
   Login captcha maintenance against the local database.
 
@@ -380,14 +380,14 @@ Commands:
 
 Boot-env captcha (`OCTOP_CAPTCHA_*`) is not touched by `reset` — unset
 those in the environment file if they are the actual lockout cause.
-Restart `octop run` (if already running) for the change to apply.
+Restart `ali run` (if already running) for the change to apply.
 
-## `octop backup`
+## `ali backup`
 
-Export and restore Octop backups. Works fully offline.
+Export and restore Alienvador backups. Works fully offline.
 
 ```
-Usage: octop backup [OPTIONS] COMMAND [ARGS]...
+Usage: ali backup [OPTIONS] COMMAND [ARGS]...
 
   Backup and restore database + local agent workspaces.
 
@@ -397,16 +397,16 @@ Commands:
   auto       Automatic backup status and one-shot run.
 ```
 
-### `octop backup auto`
+### `ali backup auto`
 
-Automatic backups are scheduled **inside** a running `octop run` process
+Automatic backups are scheduled **inside** a running `ali run` process
 (via the same system-job mechanism as TLS renewal). Configure in
 `config.json` under `backup`, with env overrides
 `OCTOP_BACKUP_AUTO_ENABLED`, `OCTOP_BACKUP_SCHEDULE`,
 `OCTOP_BACKUP_RETENTION_COUNT`, or via the dashboard Backup settings.
 
 ```
-Usage: octop backup auto [OPTIONS] COMMAND [ARGS]...
+Usage: ali backup auto [OPTIONS] COMMAND [ARGS]...
 
 Commands:
   status  Print automatic backup settings from config.json.
@@ -418,15 +418,15 @@ timezone). Automatic archives are named `octop-auto-backup-*.tar.gz`;
 retention only deletes those files and never touches manual
 `octop-backup-*.tar.gz` archives.
 
-## `octop update`
+## `ali update`
 
-Check for and install a newer Octop release from the configured
+Check for and install a newer Alienvador release from the configured
 channel (PyPI by default).
 
 ```
-Usage: octop update [OPTIONS]
+Usage: ali update [OPTIONS]
 
-  Check for and install a newer Octop release.
+  Check for and install a newer Alienvador release.
 
 Options:
   --check / --no-check     Only check; do not install.
@@ -434,19 +434,19 @@ Options:
   -h, --help               Show this message and exit.
 ```
 
-## `octop plugin`
+## `ali plugin`
 
 Install and manage third-party plugins (drop into `~/.octop/plugins/`).
 The same plugin manager powers the dashboard's "Plugins" page.
 
-Octop also **seeds bundled plugins** into `~/.octop/plugins/` during
-`octop init` and every `octop run` start. They are listed in Admin →
+Alienvador also **seeds bundled plugins** into `~/.octop/plugins/` during
+`ali init` and every `ali run` start. They are listed in Admin →
 Plugins but stay **globally disabled** until you turn them on. An id
 already recorded in `config.json` → `bundled_plugins_seeded` is not
 copied again after uninstall.
 
 ```
-Usage: octop plugin [OPTIONS] COMMAND [ARGS]...
+Usage: ali plugin [OPTIONS] COMMAND [ARGS]...
 
   Install and manage plugins.
 
@@ -457,15 +457,15 @@ Commands:
   reload     Reload all installed plugins without restart.
 ```
 
-## `octop migrate`
+## `ali migrate`
 
-Bring an existing OpenClaw or Hermes Agent setup into one Octop expert. The
+Bring an existing OpenClaw or Hermes Agent setup into one Alienvador expert. The
 source is read where it lives (`~/.openclaw`, `~/.hermes`, or `--from`) and is
 never modified.
 
 ```
-Usage: octop migrate openclaw [OPTIONS]
-       octop migrate hermes [OPTIONS]
+Usage: ali migrate openclaw [OPTIONS]
+       ali migrate hermes [OPTIONS]
 
 Options:
   --from DIRECTORY     Source home directory (default: auto-detect).
@@ -479,7 +479,7 @@ Options:
   -h, --help           Show this message and exit.
 ```
 
-| Section | OpenClaw | Hermes Agent | Lands in Octop as |
+| Section | OpenClaw | Hermes Agent | Lands in Alienvador as |
 |---------|----------|--------------|-------------------|
 | `models` | `models.providers`, `agents.defaults.model`, keys from `.env` / `env` / legacy `auth-profiles.json` | `model`, `providers` / `custom_providers`, keys from `.env` | Model providers and, when none is set yet, the default model |
 | `files` | Workspace `AGENTS.md`, `SOUL.md`, `IDENTITY.md`, `USER.md`, `MEMORY.md`, `TOOLS.md`, `HEARTBEAT.md`, `memory/*.md` | `SOUL.md`, `memories/MEMORY.md`, `memories/USER.md` | Files in the expert's workspace |
@@ -490,33 +490,32 @@ Options:
 Nothing that already exists is replaced: a second run reports everything as
 skipped. `--overwrite` replaces workspace files, skills and the default model;
 providers, MCP servers and channels are never overwritten. Channels arrive
-disabled so the old assistant and Octop do not both answer on the same bot —
+disabled so the old assistant and Alienvador do not both answer on the same bot —
 stop the old one, then enable the channel.
 
 Scheduled jobs, SSE-only MCP servers, OAuth-only model logins and platforms
-Octop has no channel for are listed after the table and left behind. Start
+Alienvador has no channel for are listed after the table and left behind. Start
 with `--dry-run`; root `--json` prints the same report as JSON. The command
 exits with status 1 when any item failed.
 
 ```text
-$ octop --agent <id> migrate openclaw --dry-run
-$ octop --agent <id> migrate hermes --from /srv/hermes --skip channels
+$ ali --agent <id> migrate openclaw --dry-run
+$ ali --agent <id> migrate hermes --from /srv/hermes --skip channels
 ```
 
 Like `agent create`, the command boots a short-lived in-process server; if
-`octop run` is already running, restart it afterwards to load the migrated
+`ali run` is already running, restart it afterwards to load the migrated
 providers and channels.
 
-## `octop acp`
-
-Expose an Octop agent as a stdio JSON-RPC ACP server. Boots a
+## `ali acp`
+Expose an Alienvador agent as a stdio JSON-RPC ACP server. Boots a
 standalone `OctopServer` (reads `~/.octop`); does **not** require
-`octop run` to be running.
+`ali run` to be running.
 
 ```
-Usage: octop acp [OPTIONS]
+Usage: ali acp [OPTIONS]
 
-  Run Octop agent as ACP server (stdio).
+  Run Alienvador agent as ACP server (stdio).
 
 Options:
   --agent TEXT   Agent to expose (default: OCTOP_AGENT or first agent).
@@ -527,13 +526,13 @@ Options:
 See [ACP integration](./acp.md) for the Zed setup example and the
 runner object schema.
 
-## `octop clean`
+## `ali clean`
 
 Reset CLI state, or delete Octop data under `~/.octop`. `--all` keeps the
 install runtime (`venv/`, `bin/`). Destructive — read the help carefully.
 
 ```
-Usage: octop clean [OPTIONS]
+Usage: ali clean [OPTIONS]
 
   Remove CLI state, or delete Octop data under ~/.octop (keeps venv/ and bin/).
 
@@ -543,13 +542,13 @@ Options:
   -h, --help            Show this message and exit.
 ```
 
-## `octop config`
+## `ali config`
 
 Inspect / edit `~/.octop/cli_state.json` (default base URL, user,
 agent).
 
 ```
-Usage: octop config [OPTIONS] COMMAND [ARGS]...
+Usage: ali config [OPTIONS] COMMAND [ARGS]...
 
   CLI state (base URL, defaults).
 
@@ -558,12 +557,12 @@ Commands:
   set-user   Pin the default --user.
 ```
 
-## `octop completion` / `octop version`
+## `ali completion` / `ali version`
 
 ```text
-$ octop completion show bash   # dump a shell snippet
-$ octop completion install     # append to ~/.zshrc / ~/.bashrc
-$ octop version                # print the installed octop version
+$ ali completion show bash   # dump a shell snippet
+$ ali completion install     # append to ~/.zshrc / ~/.bashrc
+$ ali version                # print the installed ali version
 ```
 
 ## CLI state file

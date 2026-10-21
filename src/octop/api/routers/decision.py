@@ -194,5 +194,5 @@ async def stop_laya(
     request: Request,
     _: Any = Depends(require_permission("model_decision")),
 ) -> dict[str, Any]:
-    """Stop only the Laya process Octop started."""
+    """Stop only the Laya process Alienvador started."""
     return await get_laya_runtime().stop(resolve_request_locale(request))

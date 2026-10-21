@@ -79,12 +79,12 @@ _SPECS: dict[str, CliInstallSpec] = {
 OBSIDIAN_CLI_MISSING = (
     "主机上未找到 Obsidian CLI（obsidian）。"
     "请在本机打开 Obsidian，于设置 → 通用中启用 Command line interface，并按提示注册到 PATH。"
-    "Octop 与 Obsidian 必须在同一台主机。"
+    "Alienvador 与 Obsidian 必须在同一台主机。"
     "禁止建议或执行任何终端命令。"
 )
 OBSIDIAN_NOT_RUNNING = (
     "Obsidian 未在运行，或 CLI 无法连接桌面应用。"
-    "请在 Octop 所在主机打开 Obsidian，并确认已启用 Command line interface。"
+    "请在 Alienvador 所在主机打开 Obsidian，并确认已启用 Command line interface。"
     "禁止建议或执行任何终端命令。"
 )
 
@@ -268,7 +268,7 @@ def _windows_user_path_command(directory: str) -> str:
 
 
 def obsidian_install_command(source: str | None = None, dest: str | None = None) -> str:
-    """Shell command matching the registration Octop performs for Obsidian CLI."""
+    """Shell command matching the registration Alienvador performs for Obsidian CLI."""
     src = source or _find_obsidian_bundle() or _default_obsidian_bundle_hint()
     if os.name == "nt" and _is_windows_redirector(src):
         return _windows_user_path_command(os.path.dirname(src))
@@ -399,7 +399,7 @@ def install_connector_cli(kind: str) -> dict[str, Any]:
     if not npm:
         return _fail(
             status,
-            f"未找到 npm，请先在 Octop 主机安装 Node.js，然后执行：{status['install_command']}",
+            f"未找到 npm，请先在 Alienvador 主机安装 Node.js，然后执行：{status['install_command']}",
         )
 
     # npm 全局目录（默认 /usr/local）不可写时（fnOS/容器内非 root 用户），

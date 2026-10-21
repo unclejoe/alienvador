@@ -3,9 +3,8 @@ import { Menu as MenuIcon } from "lucide-react";
 import PwaInstallPrompt from "../components/PwaInstallPrompt";
 import AppVersionBadge from "../components/AppVersionBadge";
 import CurrentVersionBadge from "../components/CurrentVersionBadge";
-import { useTheme } from "../context/ThemeContext";
+import BrandWordmark from "../components/BrandWordmark";
 import { typeSize } from "../utils/mobileTypeScale";
-import { publicUrl } from "../utils/publicUrl";
 
 const { Header: AntHeader } = Layout;
 
@@ -21,11 +20,6 @@ interface HeaderProps {
  * Desktop GitHub / theme controls moved into the account popover.
  */
 export default function Header({ onToggle, isMobile }: HeaderProps) {
-  const { isDark } = useTheme();
-  const mobileLogoSrc = isDark
-    ? publicUrl("logo_horizontal_white.png")
-    : publicUrl("logo_horizontal_dark.png");
-
   if (!isMobile) return null;
 
   // iOS PWA (`apple-mobile-web-app-status-bar-style: black-translucent`) draws
@@ -79,17 +73,18 @@ export default function Header({ onToggle, isMobile }: HeaderProps) {
           </button>
         )}
         <img
-          src={mobileLogoSrc}
-          alt="octop"
+          src="/pwa-192.png"
+          alt="Alienvador"
           style={{
-            height: 36,
-            width: "auto",
-            maxWidth: 160,
+            height: 30,
+            width: 30,
             objectFit: "contain",
             flexShrink: 0,
             display: "block",
+            borderRadius: 8,
           }}
         />
+        <BrandWordmark size={13} />
         <div
           style={{
             display: "flex",

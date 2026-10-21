@@ -1,4 +1,4 @@
-"""`octop clean` — remove CLI state and (optionally) Octop application data."""
+"""`octop clean` — remove CLI state and (optionally) all Alienvador data."""
 
 from __future__ import annotations
 
@@ -47,7 +47,7 @@ def clean(wipe_all: bool, yes: bool, dry_run: bool) -> None:
         return
     if wipe_all and not yes:
         click.confirm(
-            "This deletes Octop data (DB, configs, agents, logs). "
+            "This deletes Alienvador data (DB, configs, agents, logs). "
             "The install runtime (venv, bin) is kept. Continue?",
             abort=True,
         )

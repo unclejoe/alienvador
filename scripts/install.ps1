@@ -1,8 +1,8 @@
-# Octop Installer for Windows (PowerShell)
+# Alienvador Installer for Windows (PowerShell)
 # Usage: irm <url>/install.ps1 | iex
 #    or: .\install.ps1 [-Version X.Y.Z] [-FromSource] [-SourceDir DIR] [-Extras "browser"]
 #
-# Installs Octop into ~/.octop with a uv-managed Python environment.
+# Installs Alienvador into ~/.octop with a uv-managed Python environment.
 
 & {
 param(
@@ -22,13 +22,13 @@ $OctopBin      = Join-Path $OctopHome "bin"
 $PythonVersion = "3.12"
 $OctopRepo     = if ($env:OCTOP_REPO) { $env:OCTOP_REPO } else { "https://github.com/TencentCloud/Octop.git" }
 
-function Write-Info { param([string]$Message) Write-Host "[octop] " -ForegroundColor Green  -NoNewline; Write-Host $Message }
-function Write-Warn { param([string]$Message) Write-Host "[octop] " -ForegroundColor Yellow -NoNewline; Write-Host $Message }
-function Stop-WithError { param([string]$Message) Write-Host "[octop] ERROR: $Message" -ForegroundColor Red; exit 1 }
+function Write-Info { param([string]$Message) Write-Host "[ali] " -ForegroundColor Green  -NoNewline; Write-Host $Message }
+function Write-Warn { param([string]$Message) Write-Host "[ali] " -ForegroundColor Yellow -NoNewline; Write-Host $Message }
+function Stop-WithError { param([string]$Message) Write-Host "[ali] ERROR: $Message" -ForegroundColor Red; exit 1 }
 
 if ($Help) {
     @"
-Octop Installer for Windows
+Alienvador Installer for Windows
 
 Usage: .\install.ps1 [OPTIONS]
 
@@ -51,7 +51,7 @@ Environment:
     exit 0
 }
 
-Write-Host "[octop] Installing Octop into $OctopHome" -ForegroundColor Green
+Write-Host "[ali] Installing Alienvador into $OctopHome" -ForegroundColor Green
 
 $policy = Get-ExecutionPolicy
 if ($policy -eq "Restricted") {
@@ -212,7 +212,8 @@ function Prepare-Console {
     }
 }
 
-$VenvOctop = Join-Path $OctopVenv "Scripts\octop.exe"
+$VenvOctop = Join-Path $OctopVenv "Scripts\ali.exe"
+if (-not (Test-Path $VenvOctop)) { $VenvOctop = Join-Path $OctopVenv "Scripts\octop.exe" }
 
 if ($FromSource) {
     if ($SourceDir) {
@@ -246,8 +247,8 @@ if ($FromSource) {
 Pin-McpCompat
 Test-Install
 
-if (-not (Test-Path $VenvOctop)) { Stop-WithError "Installation failed: octop CLI not found in venv" }
-Write-Info "Octop installed successfully"
+if (-not (Test-Path $VenvOctop)) { Stop-WithError "Installation failed: ali CLI not found in venv" }
+Write-Info "Alienvador installed successfully"
 
 if (-not $script:ConsoleAvailable) {
     $check = & $VenvPython -c "import importlib.resources, octop; p=importlib.resources.files('octop')/'dashboard'/'index.html'; print('yes' if p.is_file() else 'no')" 2>&1
@@ -306,26 +307,28 @@ if (-not $wantPlaywrightChromium) {
 
 New-Item -ItemType Directory -Path $OctopBin -Force | Out-Null
 
-$wrapperPs1 = Join-Path $OctopBin "octop.ps1"
+$wrapperPs1 = Join-Path $OctopBin "ali.ps1"
 @'
 $ErrorActionPreference = "Stop"
 $OctopHome = if ($env:OCTOP_HOME) { $env:OCTOP_HOME } else { Join-Path $HOME ".octop" }
-$RealBin = Join-Path $OctopHome "venv\Scripts\octop.exe"
+$RealBin = Join-Path $OctopHome "venv\Scripts\ali.exe"
+if (-not (Test-Path $RealBin)) { $RealBin = Join-Path $OctopHome "venv\Scripts\octop.exe" }
 if (-not (Test-Path $RealBin)) {
-    Write-Error "Octop environment not found at $OctopHome\venv"
+    Write-Error "Alienvador environment not found at $OctopHome\venv"
     exit 1
 }
 & $RealBin @args
 '@ | Set-Content -Path $wrapperPs1 -Encoding UTF8
 
-$cmdWrapper = Join-Path $OctopBin "octop.cmd"
+$cmdWrapper = Join-Path $OctopBin "ali.cmd"
 @'
 @echo off
 set "OCTOP_HOME=%OCTOP_HOME%"
 if "%OCTOP_HOME%"=="" set "OCTOP_HOME=%USERPROFILE%\.octop"
-set "REAL_BIN=%OCTOP_HOME%\venv\Scripts\octop.exe"
+set "REAL_BIN=%OCTOP_HOME%\venv\Scripts\ali.exe"
+if not exist "%REAL_BIN%" set "REAL_BIN=%OCTOP_HOME%\venv\Scripts\octop.exe"
 if not exist "%REAL_BIN%" (
-    echo Error: Octop environment not found at %OCTOP_HOME%\venv >&2
+    echo Error: Alienvador environment not found at %OCTOP_HOME%\venv >&2
     exit /b 1
 )
 "%REAL_BIN%" %*
@@ -356,7 +359,7 @@ if ($env:Path -notlike "*$targetPath*") {
 }
 
 Write-Host ""
-Write-Host "Octop installed successfully!" -ForegroundColor Green
+Write-Host "Alienvador installed successfully!" -ForegroundColor Green
 Write-Host ""
 Write-Host "  Install location:  $OctopHome"
 Write-Host "  Python:            $pyVersion"
@@ -366,16 +369,16 @@ if ($script:ConsoleAvailable) {
     Write-Host "  Web UI:            not available" -ForegroundColor Yellow
 }
 Write-Host ""
-Write-Host "If 'octop' is not found in this session, run:"
+Write-Host "If 'ali' is not found in this session, run:"
 Write-Host "  `$env:Path = `"$targetPath;`$env:Path`"" -ForegroundColor White
 if ($pathSavedForNewSessions) {
     Write-Host "(Saved to User PATH; new terminals pick it up automatically.)"
 }
 Write-Host ""
 Write-Host "Then run:"
-Write-Host "  octop init" -ForegroundColor White
-Write-Host "  octop run" -ForegroundColor White
-Write-Host "  octop service start" -ForegroundColor White
+Write-Host "  ali init" -ForegroundColor White
+Write-Host "  ali run" -ForegroundColor White
+Write-Host "  ali service start" -ForegroundColor White
 Write-Host "  http://127.0.0.1:8088" -ForegroundColor White
 
 } @args

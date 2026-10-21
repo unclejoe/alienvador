@@ -1,4 +1,4 @@
-"""Octop — smarter self-hosted AI assistant (multi-user, multi-agent)."""
+"""Alienvador — smarter self-hosted AI assistant (multi-user, multi-agent)."""
 
 from __future__ import annotations
 

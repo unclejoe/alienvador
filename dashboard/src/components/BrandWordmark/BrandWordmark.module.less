@@ -1,0 +1,28 @@
+.wordmark {
+  font-family: "Orbitron", "Segoe UI", system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  /* keep the trailing letter-space inside the gradient box */
+  padding-right: 0.24em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  background: linear-gradient(100deg, #0c9b6e 0%, #0b7fa8 55%, #6d3bd6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/*
+ * Dark theme uses solid text + text-shadow halo. background-clip:text combined
+ * with a filter renders mushy on near-black sidebar backgrounds, so the clip is
+ * fully reset here instead of re-tinted.
+ */
+html[data-theme="dark"] .wordmark {
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  color: #e8fbef;
+  filter: none;
+  text-shadow: 0 0 10px rgba(61, 251, 161, 0.45);
+}

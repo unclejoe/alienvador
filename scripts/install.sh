@@ -49,9 +49,9 @@ else
     BOLD="" GREEN="" YELLOW="" RED="" RESET=""
 fi
 
-info()  { printf "${GREEN}[octop]${RESET} %s\n" "$*"; }
-warn()  { printf "${YELLOW}[octop]${RESET} %s\n" "$*"; }
-error() { printf "${RED}[octop]${RESET} %s\n" "$*" >&2; }
+info()  { printf "${GREEN}[ali]${RESET} %s\n" "$*"; }
+warn()  { printf "${YELLOW}[ali]${RESET} %s\n" "$*"; }
+error() { printf "${RED}[ali]${RESET} %s\n" "$*" >&2; }
 die()   { error "$@"; exit 1; }
 
 # ── Parse arguments ──────────────────────────────────────────────────────────────────
@@ -123,7 +123,7 @@ case "$OS" in
     *) die "Unsupported OS: $OS. Use install.ps1 or install.bat on Windows." ;;
 esac
 
-printf "${GREEN}[octop]${RESET} Installing Octop into ${BOLD}%s${RESET}\n" "$OCTOP_HOME"
+printf "${GREEN}[ali]${RESET} Installing Octop into ${BOLD}%s${RESET}\n" "$OCTOP_HOME"
 
 # ── Step 1: ensure uv is available ────────────────────────────────────────────────────
 _install_uv_via_pip() {
@@ -946,16 +946,20 @@ fi
 # ── Step 4: create the wrapper script ─────────────────────────────────────────────────────
 mkdir -p "$OCTOP_BIN"
 
-cat > "$OCTOP_BIN/octop" << 'WRAPPER'
+cat > "$OCTOP_BIN/ali" << 'WRAPPER'
 #!/usr/bin/env bash
-# Octop CLI wrapper. Delegates to the uv-managed environment.
+# Alienvador CLI 包装脚本 — 委托给 uv 管理的环境。
 set -euo pipefail
 
 OCTOP_HOME="${OCTOP_HOME:-$HOME/.octop}"
-REAL_BIN="$OCTOP_HOME/venv/bin/octop"
+if [ -x "$OCTOP_HOME/venv/bin/ali" ]; then
+    REAL_BIN="$OCTOP_HOME/venv/bin/ali"
+else
+    REAL_BIN="$OCTOP_HOME/venv/bin/octop"
+fi
 
 if [ ! -x "$REAL_BIN" ]; then
-    echo "Error: Octop environment not found in $OCTOP_HOME/venv" >&2
+    echo "Error: Alienvador environment not found in $OCTOP_HOME/venv" >&2
     echo "Please re-run the installer" >&2
     exit 1
 fi
@@ -963,8 +967,8 @@ fi
 exec "$REAL_BIN" "$@"
 WRAPPER
 
-chmod +x "$OCTOP_BIN/octop"
-info "Wrapper script created: $OCTOP_BIN/octop"
+chmod +x "$OCTOP_BIN/ali"
+info "Wrapper script created: $OCTOP_BIN/ali"
 
 # ── Step 5: make octop available immediately (no source) ─────────────────────
 # A child process cannot change the parent shell's PATH. After curl|bash or
@@ -979,8 +983,8 @@ _can_write_dir() {
 _try_symlink() {
     # Symlink the wrapper to octop in target_dir. Return 0 on success.
     local target_dir="$1"
-    local link_path="$target_dir/octop"
-    local src="$OCTOP_BIN/octop"
+    local link_path="$target_dir/ali"
+    local src="$OCTOP_BIN/ali"
 
     mkdir -p "$target_dir" 2>/dev/null || true
 
@@ -1017,7 +1021,7 @@ _link_into_existing_path() {
     local dir
     for dir in "${candidates[@]}"; do
         if _path_contains "$dir" && _try_symlink "$dir"; then
-            LINKED_PATH="$dir/octop"
+            LINKED_PATH="$dir/ali"
             return 0
         fi
     done
@@ -1026,7 +1030,7 @@ _link_into_existing_path() {
     # once it exists. If this session's PATH does not include it yet, the current
     # shell still needs the profile block below.
     if _try_symlink "$HOME/.local/bin"; then
-        LINKED_PATH="$HOME/.local/bin/octop"
+        LINKED_PATH="$HOME/.local/bin/ali"
         if _path_contains "$HOME/.local/bin"; then
             return 0
         fi
@@ -1039,7 +1043,7 @@ _link_into_existing_path() {
 IMMEDIATE_OK=false
 if _link_into_existing_path; then
     IMMEDIATE_OK=true
-    info "Linked to ${LINKED_PATH} (octop works in the current shell)"
+    info "Linked to ${LINKED_PATH} (ali works in the current shell)"
 elif [ -n "$LINKED_PATH" ]; then
     info "Linked to $LINKED_PATH"
 fi
@@ -1134,10 +1138,10 @@ fi
 echo ""
 
 if [ "$IMMEDIATE_OK" = true ]; then
-    info "octop is ready to use in the current shell (no source needed)"
+    info "ali is ready to use in the current shell (no source needed)"
 elif [ -n "${BASH_SOURCE[0]:-}" ] && [ "${BASH_SOURCE[0]}" != "$0" ]; then
     export PATH="$OCTOP_BIN:$PATH"
-    info "PATH updated; octop is available now"
+    info "PATH updated; ali is available now"
 else
     warn "Could not write to a directory already in PATH (e.g. /usr/local/bin). In this shell run:"
     echo ""
@@ -1150,9 +1154,9 @@ fi
 echo ""
 echo "Then run:"
 echo ""
-printf "  ${BOLD}octop run${RESET}       # Run in the foreground (API + Web console)\n"
-printf "  ${BOLD}octop service start${RESET}  # Install and run in the background (systemd / launchd)\n"
+printf "  ${BOLD}ali run${RESET}        # Run in the foreground (API + Web console)\n"
+printf "  ${BOLD}ali service start${RESET}   # Install and run in the background (systemd / launchd)\n"
 printf "  ${BOLD}open http://127.0.0.1:8088${RESET}\n"
 echo ""
-printf "Upgrade: re-run this installer. Cleanup: ${BOLD}octop clean${RESET}\n"
+printf "Upgrade: re-run this installer. Cleanup: ${BOLD}ali clean${RESET}\n"
 printf "Playwright Chromium (optional): ${BOLD}$OCTOP_VENV/bin/python -m playwright install chromium${RESET}\n"

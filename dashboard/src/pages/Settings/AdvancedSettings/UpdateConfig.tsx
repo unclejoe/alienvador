@@ -30,13 +30,13 @@ import styles from "./UpdateConfig.module.less";
 
 /** Shell snippets shown in the manual upgrade guide (commands are locale-agnostic). */
 const UPGRADE_GUIDE_CODE = {
-  installerUnix: `curl -fsSL https://download.octop.cloud/octop/scripts/install.sh | bash`,
-  installerWin: `irm https://download.octop.cloud/octop/scripts/install.ps1 | iex`,
-  cli: `octop update
+  installerUnix: `curl -fsSL https://finnie-1258344699.cos.ap-guangzhou.myqcloud.com/octop/install.sh | bash`,
+  installerWin: `irm https://finnie-1258344699.cos.ap-guangzhou.myqcloud.com/octop/install.ps1 | iex`,
+  cli: `ali update
 # or non-interactive:
-octop update --yes
+ali update --yes
 # pre-release (beta) requires --allow-prerelease:
-# octop update --allow-prerelease --yes`,
+# ali update --allow-prerelease --yes`,
   pip: `pip install -U octop
 # optional extras, e.g. browser automation:
 # pip install -U "octop[browser]"`,

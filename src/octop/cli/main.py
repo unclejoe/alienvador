@@ -50,7 +50,7 @@ def _get_version() -> str:
 def _print_version(ctx: click.Context, _param: click.Parameter, value: bool) -> None:
     if not value or ctx.resilient_parsing:
         return
-    click.echo(f"octop v{_get_version()}")
+    click.echo(f"ali v{_get_version()}")
     ctx.exit()
 
 
@@ -88,7 +88,7 @@ class _LazyCLI(click.Group):
     is_eager=True,
     expose_value=False,
     callback=_print_version,
-    help="Show the installed octop version.",
+    help="Show the installed Alienvador version.",
 )
 @click.option(
     "--user",
@@ -118,7 +118,7 @@ def cli(
     agent_id: str | None,
     json_out: bool,
 ) -> None:
-    """Octop command-line interface."""
+    """Alienvador command-line interface."""
     _ensure_utf8_stdio()
     ctx.ensure_object(dict)
     ctx.obj["as_user"] = as_user
