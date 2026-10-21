@@ -10,11 +10,14 @@ from pathlib import Path
 
 import pytest
 
+import octop.infra.setup.self_update as self_update
+
 from octop.infra.setup.self_update import (
     UpgradeResult,
     _all_mirrors_failed,
     build_upgrade_command,
     fetch_pypi_info,
+    release_wheel_url,
     index_label,
     is_newer,
     is_prerelease,
@@ -88,7 +91,7 @@ def test_parse_changelog_for_beta_version() -> None:
 
 
 class _JsonResp:
-    def __init__(self, payload: dict[str, object]) -> None:
+    def __init__(self, payload: dict[str, object] | list[object]) -> None:
         self._raw = json.dumps(payload).encode()
 
     def read(self) -> bytes:
@@ -104,25 +107,18 @@ class _JsonResp:
 def test_fetch_pypi_info_loads_prerelease_description(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    catalog = {
-        "info": {"version": "1.0.1", "description": "## [1.0.1]\n- stable only\n"},
-        "releases": {"1.0.1": [{}], "1.0.2b5": [{}]},
-    }
-    beta = {
-        "info": {
-            "version": "1.0.2b5",
-            "description": "## [1.0.2b5]\n- remote bridge\n\n## [1.0.1]\n- stable\n",
-        }
-    }
+    releases = [
+        {"tag_name": "v1.0.1", "body": "## [1.0.1]\n- stable only\n"},
+        {"tag_name": "v1.0.2b5", "body": "## [1.0.2b5]\n- remote bridge\n"},
+        {"tag_name": "nightly", "body": "junk tag"},
+    ]
     urls: list[str] = []
 
     def fake_urlopen(req: object, timeout: int = 10) -> _JsonResp:
         url = getattr(req, "full_url", "")
         urls.append(url)
-        if url.endswith("/octop/json"):
-            return _JsonResp(catalog)
-        if url.endswith("/octop/1.0.2b5/json"):
-            return _JsonResp(beta)
+        if "/releases" in url:
+            return _JsonResp(releases)
         raise AssertionError(url)
 
     monkeypatch.setattr("octop.infra.setup.self_update.urllib.request.urlopen", fake_urlopen)
@@ -132,32 +128,45 @@ def test_fetch_pypi_info_loads_prerelease_description(
     assert info.latest_stable == "1.0.1"
     assert info.description is not None
     assert "remote bridge" in info.description
-    assert any(url.endswith("/octop/1.0.2b5/json") for url in urls)
+    assert info.source.startswith("github:")
+    assert len(urls) == 1  # newest release body comes from the list payload
 
 
-def test_fetch_pypi_info_skips_versioned_fetch_when_stable_is_latest(
+def test_fetch_pypi_info_returns_none_without_version_tags(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    catalog = {
-        "info": {"version": "1.0.1", "description": "## [1.0.1]\n- stable\n"},
-        "releases": {"1.0.1": [{}], "1.0.0": [{}]},
+    def fake_urlopen(req: object, timeout: int = 10) -> _JsonResp:
+        return _JsonResp([{"tag_name": "nightly", "body": "no version"}])
+
+    monkeypatch.setattr("octop.infra.setup.self_update.urllib.request.urlopen", fake_urlopen)
+    assert fetch_pypi_info() is None
+
+
+def test_release_wheel_url_matches_tag_with_and_without_v(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    release = {
+        "tag_name": "v1.0.2",
+        "assets": [
+            {"name": "octop-1.0.2.tar.gz", "browser_download_url": "https://x/octop-1.0.2.tar.gz"},
+            {
+                "name": "octop-1.0.2-py3-none-any.whl",
+                "browser_download_url": "https://x/octop-1.0.2-py3-none-any.whl",
+            },
+        ],
     }
     urls: list[str] = []
 
     def fake_urlopen(req: object, timeout: int = 10) -> _JsonResp:
         url = getattr(req, "full_url", "")
         urls.append(url)
-        if url.endswith("/octop/json"):
-            return _JsonResp(catalog)
+        if url.endswith("/releases/tags/v1.0.2"):
+            return _JsonResp(release)
         raise AssertionError(url)
 
     monkeypatch.setattr("octop.infra.setup.self_update.urllib.request.urlopen", fake_urlopen)
-    info = fetch_pypi_info()
-    assert info is not None
-    assert info.version == "1.0.1"
-    assert info.description is not None
-    assert "stable" in info.description
-    assert urls == ["https://pypi.org/pypi/octop/json"]
+    assert release_wheel_url("1.0.2") == "https://x/octop-1.0.2-py3-none-any.whl"
+    assert urls == [f"https://api.github.com/repos/{self_update._RELEASE_REPO}/releases/tags/v1.0.2"]
 
 
 def test_build_upgrade_command_prerelease_flags(
