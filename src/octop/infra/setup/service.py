@@ -31,14 +31,14 @@ logger = logging.getLogger(__name__)
 ServiceMode = Literal["systemd", "launchd"]
 ServiceScope = Literal["user", "system"]
 
-SERVICE_NAME = "octop"
+SERVICE_NAME = "ali"
 SYSTEMD_UNIT = f"{SERVICE_NAME}.service"
 LAUNCHD_LABEL = SERVICE_NAME
 NOFILE_DROPIN_NAME = "10-nofile.conf"
 RESOURCE_DROPIN_NAME = "15-resource-limits.conf"
 
 # Give freshly-started services a moment to bind the port before health checks
-# begin.  `octop run` typically takes several seconds to initialise DB, load
+# begin.  `ali run` typically takes several seconds to initialise DB, load
 # agents, and start accepting HTTP requests.
 _STARTUP_GRACE_SECONDS = 5.0
 
@@ -168,29 +168,36 @@ def launchd_bootstrap_target(scope: ServiceScope) -> str:
 
 def resolve_octop_executable(home: Path | None = None) -> Path:
     root = home or PathLayout.from_env().root
+    # Prefer the `ali` launcher; fall back to a legacy `octop` launcher for
+    # managed venvs installed before the rename.
     for candidate in (
+        root / "bin" / "ali",
         root / "bin" / "octop",
+        root / "venv" / "bin" / "ali",
         root / "venv" / "bin" / "octop",
+        root / "venv" / "Scripts" / "ali.exe",
         root / "venv" / "Scripts" / "octop.exe",
     ):
         if candidate.is_file():
             return candidate
 
-    # Dev / conda / uv-tool installs: use the octop that invoked this command.
+    # Dev / conda / uv-tool installs: use the launcher that invoked this command.
     for candidate in (
+        Path(sys.executable).parent / "ali",
         Path(sys.executable).parent / "octop",
+        Path(sys.executable).parent / "ali.exe",
         Path(sys.executable).parent / "octop.exe",
     ):
         if candidate.is_file():
             return candidate
 
-    found = shutil.which("octop")
+    found = shutil.which("ali") or shutil.which("octop")
     if found:
         return Path(found)
 
     raise FileNotFoundError(
-        f"octop executable not found under {root} or on PATH; "
-        "run `scripts/install.sh` or ensure `octop` is installed"
+        f"ali executable not found under {root} or on PATH; "
+        "run `scripts/install.sh` or ensure `ali` is installed"
     )
 
 
@@ -401,7 +408,7 @@ def render_systemd_unit(runtime: ServiceRuntime, *, user_unit: bool | None = Non
     nofile_line = f"LimitNOFILE={nofile}\n" if nofile is not None else ""
     return (
         "[Unit]\n"
-        "Description=Octop AI Server\n"
+        "Description=Alienvador AI Server\n"
         "After=network.target\n"
         "\n"
         "[Service]\n"

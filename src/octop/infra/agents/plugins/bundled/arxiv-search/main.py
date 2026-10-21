@@ -144,7 +144,7 @@ async def search_arxiv(
             async with httpx.AsyncClient(
                 timeout=30.0,
                 headers={
-                    "User-Agent": "Octop-arxiv-search/0.1.0",
+                    "User-Agent": "Alienvador-arxiv-search/0.1.0",
                     "Accept": "application/atom+xml",
                 },
                 follow_redirects=True,

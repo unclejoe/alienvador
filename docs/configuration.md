@@ -1,7 +1,7 @@
 # Configuration
 
-Octop stores all of its state under `~/.octop/`. The directory is created
-on first server start (or by `octop init` / `octop run`).
+Alienvador stores all of its state under `~/.octop/`. The directory is created
+on first server start (or by `ali init` / `ali run`).
 
 ## Filesystem layout
 
@@ -10,14 +10,14 @@ on first server start (or by `octop init` / `octop run`).
 ├── config.json              # process-level settings (host, port, CORS, DB, TLS, …)
 ├── env                      # optional dotenv (OCTOP_DATABASE_*, API keys, …); loaded at server start
 ├── octop.db                 # SQLite — users, agents, providers, sessions, audit
-├── cli_state.json           # CLI token + pinned defaults (`octop user login`)
-├── repl_history             # readline-style history for `octop chats repl`
+├── cli_state.json           # CLI token + pinned defaults (`ali user login`)
+├── repl_history             # readline-style history for `ali chats repl`
 ├── secrets/
-│   └── jwt_secret           # 32-byte random; rotate with `octop admin rotate-jwt-secret`
+│   └── jwt_secret           # 32-byte random; rotate with `ali admin rotate-jwt-secret`
 ├── agents/<agent_id>/       # per-agent workspace (LangGraph state, attachments, …)
 ├── plugins/                 # installed third-party plugins
-├── ssl/                     # self-signed certs when `octop run --ssl` is used without --cert/--key
-├── logs/                    # rotating log files (when `octop service start` writes a logfile)
+├── ssl/                     # self-signed certs when `ali run --ssl` is used without --cert/--key
+├── logs/                    # rotating log files (when `ali service start` writes a logfile)
 └── octop.log                # default foreground log path
 ```
 
@@ -32,8 +32,8 @@ file are left alone). Every running agent inherits those keys:
   cannot be overridden from `.env`). New agents store that file at
   `{workspace}/.octop/.env`; existing agents keep `{workspace}/.env` when
   their stored internal system-files prefix uses the legacy layout. Remote
-  object-store workspaces are not read from the host path — Octop/harness
-  also reads `.env` through the agent backend on each execute. Octop also
+  object-store workspaces are not read from the host path — Alienvador/harness
+  also reads `.env` through the agent backend on each execute. Alienvador also
   injects `OCTOP_AGENT_ID`, `OCTOP_AUTH_DIR` (under `{workspace}/.octop/auth`
   for new agents; legacy agents keep `{workspace}/.octop-auth`),
   and `OCTOP_HOME` into shell/sandbox env.
@@ -61,8 +61,8 @@ serialize inference. Switching the model or `OCTOP_HOME`, or deleting the cached
 model, releases the resident session. Knowledge indexing processes one document
 at a time; large imports continue in the background.
 
-On Linux, `octop service start` and `octop service restart` install/update
-`octop.service.d/15-resource-limits.conf` alongside the existing service unit.
+On Linux, `ali service start` and `ali service restart` install/update
+`ali.service.d/15-resource-limits.conf` alongside the existing service unit.
 The main unit, custom `ExecStart`, service user, and other drop-ins are preserved.
 Defaults are `MemoryHigh=60%` and `MemoryMax=75%` of physical RAM,
 `MemorySwapMax=512M`, `OOMPolicy=kill`, a 30-second restart delay, and at most three
@@ -71,8 +71,8 @@ they are a host safeguard, not a guarantee that every model fits. Memory control
 require the corresponding systemd/cgroup support (user services need cgroup v2
 with the memory controller available).
 
-To set a machine-specific budget, use `systemctl --user edit octop.service`
-(or `sudo systemctl edit octop.service` for a system service). For example:
+To set a machine-specific budget, use `systemctl --user edit ali.service`
+(or `sudo systemctl edit ali.service` for a system service). For example:
 
 ```ini
 [Service]
@@ -84,7 +84,7 @@ MemorySwapMax=512M
 The resulting `override.conf` sorts after the managed defaults and survives
 future service updates. Restart the service to apply it. If repeated failures
 hit the start limit, correct the cause before running
-`systemctl --user reset-failed octop.service` and starting the service again
+`systemctl --user reset-failed ali.service` and starting the service again
 (omit `--user` for a system service). Foreground, Docker, and macOS launchd
 deployments retain their own process/container resource policies.
 
@@ -194,15 +194,15 @@ Each variable, when set, takes precedence over the matching key in
 | `OCTOP_DATABASE_SQLITE_PATH` | path | `octop.db` | SQLite file path (relative to `OCTOP_HOME` unless absolute) |
 | `OCTOP_DATABASE_HOST` | string | `127.0.0.1` | PostgreSQL host (when `driver=postgresql`) |
 | `OCTOP_DATABASE_PORT` | int | `5432` | PostgreSQL port |
-| `OCTOP_DATABASE_NAME` | string | `octop` | PostgreSQL database name |
-| `OCTOP_DATABASE_USER` | string | `octop` | PostgreSQL user |
+| `OCTOP_DATABASE_NAME` | string | `ali` | PostgreSQL database name |
+| `OCTOP_DATABASE_USER` | string | `ali` | PostgreSQL user |
 | `OCTOP_DATABASE_PASSWORD` | string | empty | PostgreSQL password (overrides file; prefer env in production) |
-| `OCTOP_ADMIN_USERNAME` | string | empty | Pre-fills the first-admin username in `octop init` |
-| `OCTOP_ADMIN_PASSWORD` | string | empty | Pre-fills the first-admin password in `octop init` |
+| `OCTOP_ADMIN_USERNAME` | string | empty | Pre-fills the first-admin username in `ali init` |
+| `OCTOP_ADMIN_PASSWORD` | string | empty | Pre-fills the first-admin password in `ali init` |
 | `OCTOP_ADMIN_DISPLAY_NAME` | string | empty | Pre-fills the admin display name |
 | `OCTOP_USER` | string | empty | Default `--user` for CLI subcommands |
 | `OCTOP_AGENT` | string | empty | Default `--agent` for CLI subcommands |
-| `OCTOP_SERVICE_MODE` | `systemd` \| `launchd` | auto | Override the service backend (used by `octop service`) |
+| `OCTOP_SERVICE_MODE` | `systemd` \| `launchd` | auto | Override the service backend (used by `ali service`) |
 | `OCTOP_SERVICE_SCOPE` | `user` \| `system` | auto | systemd `--user` vs system unit (Linux only) |
 
 Invalid integer values are logged and ignored — the on-disk default
@@ -259,7 +259,7 @@ step; password verification works without a pool. The modern flow uses
 plus `database_bound` / `database_driver`. `setup_lockdown` middleware
 blocks non-setup routes until the wizard completes.
 
-For unattended installs, use `octop init --yes` with
+For unattended installs, use `ali init --yes` with
 `OCTOP_ADMIN_USERNAME` / `OCTOP_ADMIN_PASSWORD` (and
 `OCTOP_REQUIRE_SETUP_PASSWORD=false` if the env-var path is used). This
 runs the same migrations + admin creation without the HTTP wizard.
@@ -270,7 +270,7 @@ The JWT secret is generated on first start and stored in
 `~/.octop/secrets/jwt_secret`. Rotate it with:
 
 ```bash
-octop admin rotate-jwt-secret
+ali admin rotate-jwt-secret
 ```
 
 Rotation invalidates every outstanding access token immediately. The
