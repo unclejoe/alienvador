@@ -5,7 +5,7 @@
 # 环境变量:
 #   HOME                      — 必须为 /data，使 ~/.octop 映射到数据卷
 #   OCTOP_DEFAULT_PASSWORD    — 首次管理员密码（须 ≥8 位且含字母和数字）。
-#                               合格则 octop init 建账号；未设置或未通过
+#                               合格则 ali init 建账号；未设置或未通过
 #                               策略则不建管理员，启动后走 Web 设置向导。
 #   OCTOP_ADMIN_USERNAME      — 首次管理员用户名（默认: admin）
 #   OCTOP_ADMIN_DISPLAY_NAME  — 可选显示名
@@ -16,8 +16,8 @@
 # 写到数据卷（/data/.octop/octop-login.txt），打开页面走设置向导。
 #
 # 初始化标记（issue #1866）：PostgreSQL 等外部数据库不会在数据卷生成
-# octop.db，仅凭 DB_FILE 判断会在每次重启重复执行 octop init（管理员
-# INSERT 撞 UNIQUE 约束直接崩溃）。octop init 成功后写入
+# octop.db，仅凭 DB_FILE 判断会在每次重启重复执行 ali init（管理员
+# INSERT 撞 UNIQUE 约束直接崩溃）。ali init 成功后写入
 # /data/.octop/.initialized，重启命中该标记即跳过引导直接启动。
 # =============================================================================
 set -euo pipefail
@@ -104,7 +104,7 @@ octop_write_setup_hint() {
     local pw
     pw="$(tr -d '\n\r' < "$WIZARD_FILE")"
     cat > "$CREDENTIAL_FILE" << EOF
-Octop Setup Required
+Alienvador Setup Required
 ====================
 URL:      http://<host>:${PORT}
 
@@ -122,7 +122,7 @@ EOF
 octop_write_admin_credential() {
     local password="$1"
     cat > "$CREDENTIAL_FILE" << EOF
-Octop Login Credential
+Alienvador Login Credential
 ======================
 URL:      http://<host>:${PORT}
 Username: ${ADMIN_USERNAME}
@@ -147,7 +147,7 @@ octop_start_setup_wizard() {
 
 octop_run_init() {
     local password="$1" init_log="$2"
-    octop init \
+    ali init \
         --yes \
         --admin-username "$ADMIN_USERNAME" \
         --admin-password "$password" \
@@ -177,7 +177,7 @@ octop_entrypoint_main() {
                 fi
                 rm -f "$init_log"
                 touch "$INIT_MARKER"
-                echo "[entrypoint] 已写入初始化标记 ${INIT_MARKER}，重启将跳过 octop init。"
+                echo "[entrypoint] 已写入初始化标记 ${INIT_MARKER}，重启将跳过 ali init。"
             elif grep -qiE 'password is too common|password too short|password must include' "$init_log"; then
                 cat "$init_log" >&2 || true
                 rm -f "$init_log"
@@ -202,7 +202,7 @@ octop_entrypoint_main() {
 
     if [ $# -eq 0 ]; then
         echo "[entrypoint] 正在启动 Octop，端口 $PORT..."
-        exec octop run --host 0.0.0.0 --port "$PORT"
+        exec ali run --host 0.0.0.0 --port "$PORT"
     fi
 
     if [ "$1" = "octop" ]; then

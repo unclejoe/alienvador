@@ -95,7 +95,7 @@ dev = [
 ]
 
 [project.scripts]
-octop = "octop.cli.main:cli"
+ali = "octop.cli.main:cli"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/octop"]

@@ -29,11 +29,11 @@ import styles from "./UpdateConfig.module.less";
 const UPGRADE_GUIDE_CODE = {
   installerUnix: `curl -fsSL https://finnie-1258344699.cos.ap-guangzhou.myqcloud.com/octop/install.sh | bash`,
   installerWin: `irm https://finnie-1258344699.cos.ap-guangzhou.myqcloud.com/octop/install.ps1 | iex`,
-  cli: `octop update
+  cli: `ali update
 # or non-interactive:
-octop update --yes
+ali update --yes
 # pre-release (beta) requires --allow-prerelease:
-# octop update --allow-prerelease --yes`,
+# ali update --allow-prerelease --yes`,
   pip: `pip install -U octop
 # optional extras, e.g. browser automation:
 # pip install -U "octop[browser]"`,

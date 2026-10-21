@@ -99,7 +99,7 @@ def is_inprocess_gateway(entry: ConnectorCatalogEntry) -> bool:
 
 
 def uses_internal_http_mcp(entry: ConnectorCatalogEntry) -> bool:
-    """Harness loads Octop-hosted HTTP MCP at ``/api/internal/mcp``."""
+    """Harness loads Alienvador-hosted HTTP MCP at ``/api/internal/mcp``."""
     return entry.mcp_mode == "internal"
 
 

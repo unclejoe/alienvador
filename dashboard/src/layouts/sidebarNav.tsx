@@ -226,7 +226,7 @@ export function buildNavSections(
       labelKey: "nav.knowledgeBases",
     });
   }
-  // User-scoped remote Octop links stay available without a module permission.
+  // User-scoped remote Alienvador links stay available without a module permission.
   settingsItems.push({
     key: "bridge",
     path: "/bridge",
