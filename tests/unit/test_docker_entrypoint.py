@@ -178,7 +178,7 @@ def test_first_boot_valid_password_creates_admin(tmp_path: Path, password: str) 
     assert result.returncode == 0, result.stderr + result.stdout
     assert (octop_home / "init-password.txt").read_text(encoding="utf-8") == password
     cred = (octop_home / "credential.txt").read_text(encoding="utf-8")
-    assert "Octop Login Credential" in cred
+    assert "Alienvador Login Credential" in cred
     assert f"Password: {password}" in cred
     assert "Username: admin" in cred
     assert not (octop_home / "octop-login.txt").exists()
@@ -293,7 +293,7 @@ if [ "$1" = "init" ]; then
         exit 1
     fi
     if [ "${OCTOP_STUB_INIT_ALREADY_EXISTS:-0}" = "1" ]; then
-        printf "  admin user 'octop' already exists, skipping.\n"
+        printf "  admin user 'admin' already exists, skipping.\n"
     fi
 fi
 exit 0
@@ -310,12 +310,12 @@ def _run_entrypoint(
     extra_env: dict[str, str] | None = None,
     args: tuple[str, ...] = (),
 ) -> tuple[subprocess.CompletedProcess[str], list[str]]:
-    """Run the real entrypoint with a stub ``octop`` on PATH; return (result, octop argv lines)."""
+    """Run the real entrypoint with a stub ``ali`` on PATH; return (result, octop argv lines)."""
     assert bash_exe is not None
     home = tmp_path / "data"
     stub_dir = tmp_path / "stub-bin"
     stub_dir.mkdir(exist_ok=True)
-    stub = stub_dir / "octop"
+    stub = stub_dir / "ali"
     if not stub.exists():
         stub.write_text(_STUB_OCTOP, encoding="utf-8", newline="\n")
         stub.chmod(0o755)

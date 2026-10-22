@@ -419,7 +419,7 @@ async def test_check_endpoint_reports_error_code_when_pypi_unreachable(
     result = await update_router.check_for_updates(_=None, server=_settings_server())
 
     assert result["latest_version"] is None
-    assert result["error"] == "could not reach PyPI"
+    assert result["error"] == "update source unreachable or has no releases yet"
     assert result["error_code"] == "pypi_unreachable"
 
 
