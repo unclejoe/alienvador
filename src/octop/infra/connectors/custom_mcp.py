@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import re
 from typing import Any, Literal
 from urllib.parse import urlparse
@@ -115,13 +116,23 @@ def _normalize_args(raw: Any) -> list[str]:
     return [str(item) for item in raw]
 
 
+def _allow_http_mcp_escape_hatch() -> bool:
+    """Explicit operator opt-in for http:// MCP URLs on public hosts."""
+    return (os.environ.get("OCTOP_MCP_ALLOW_HTTP") or "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }
+
+
 def validate_mcp_http_url(url: str) -> str:
     """Validate a user-configured MCP/connector URL.
 
     Loopback and LAN (private / link-local) hosts may use HTTP or HTTPS with no
     SSRF restriction — operators deliberately point connectors at local MCP
     servers. Public remote hosts must use HTTPS and pass the shared SSRF guard
-    (literal private/reserved IPs rejected).
+    (literal private/reserved IPs rejected), unless the operator opts in via
+    OCTOP_MCP_ALLOW_HTTP (self-hosted http-only endpoint behind a public name).
     """
     text = url.strip()
     if not text:
@@ -147,6 +158,10 @@ def validate_mcp_http_url(url: str) -> str:
 
     # Local / LAN MCP: allow http(s) without the outbound SSRF private-IP ban.
     if is_private_or_local_host(host):
+        return text
+
+    # Operator opt-in: skip HTTPS enforcement and the outbound SSRF guard.
+    if _allow_http_mcp_escape_hatch():
         return text
 
     # Public remote MCP: HTTPS only + existing SSRF guards.
