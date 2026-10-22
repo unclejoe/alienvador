@@ -147,6 +147,25 @@ def test_rejects_public_http_and_allows_lan():
         assert spec["url"] == url
 
 
+def test_public_http_allowed_with_escape_hatch(monkeypatch):
+    from octop.infra.errors import ErrorCode, OctopError
+
+    monkeypatch.setenv("OCTOP_MCP_ALLOW_HTTP", "1")
+    spec = normalize_server_spec(
+        "insecure",
+        {"transport": "streamable_http", "url": "http://example.com/mcp"},
+    )
+    assert spec["url"] == "http://example.com/mcp"
+
+    monkeypatch.setenv("OCTOP_MCP_ALLOW_HTTP", "false")
+    with pytest.raises(OctopError) as http_exc:
+        normalize_server_spec(
+            "bad",
+            {"transport": "streamable_http", "url": "http://example.com/mcp"},
+        )
+    assert http_exc.value.code is ErrorCode.CONNECTOR_MCP_HTTPS_REQUIRED
+
+
 def test_allows_loopback_http_and_https():
     for url in (
         "http://localhost:8080/mcp",
