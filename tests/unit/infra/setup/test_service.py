@@ -167,7 +167,7 @@ def test_install_service_systemd_user_uses_systemctl_user(
 
     assert install_service(runtime) is True
     assert calls[0] == ["daemon-reload"]
-    assert calls[1] == ["enable", "octop"]
+    assert calls[1] == ["enable", "ali"]
 
 
 def test_install_service_does_not_rewrite_custom_unit_without_force(
@@ -249,10 +249,10 @@ def test_install_service_adds_resource_limits_to_existing_unit(
     from types import SimpleNamespace
 
     runtime = replace(_runtime(tmp_path), scope=scope)
-    unit = tmp_path / "octop.service"
+    unit = tmp_path / "ali.service"
     custom_unit = "[Service]\nExecStart=custom-launcher\nUser=custom-user\n"
     unit.write_text(custom_unit)
-    dropins = tmp_path / "octop.service.d"
+    dropins = tmp_path / "ali.service.d"
     dropins.mkdir()
     override = dropins / "90-local.conf"
     override.write_text("[Service]\nMemoryMax=4G\n")
@@ -282,7 +282,7 @@ def test_resource_dropin_failure_does_not_block_restart(monkeypatch, tmp_path) -
     from types import SimpleNamespace
 
     runtime = _runtime(tmp_path)
-    unit = tmp_path / "octop.service"
+    unit = tmp_path / "ali.service"
     unit.write_text("[Service]\nExecStart=custom-launcher\n")
     calls = []
 
@@ -301,7 +301,7 @@ def test_resource_dropin_failure_does_not_block_restart(monkeypatch, tmp_path) -
         ),
     )
     restart_service(runtime)
-    assert ("restart", "octop") in calls
+    assert ("restart", "ali") in calls
     assert "custom-launcher" in unit.read_text()
 
 
@@ -333,11 +333,11 @@ def test_start_service_restarts_systemd_when_apply_unit(
     monkeypatch.setattr(service_mod, "_wait_for_startup", lambda: None)
 
     service_mod.start_service(runtime, apply_unit=True)
-    assert calls == [["restart", "octop"]]
+    assert calls == [["restart", "ali"]]
 
     calls.clear()
     service_mod.start_service(runtime, apply_unit=False)
-    assert calls == [["start", "octop"]]
+    assert calls == [["start", "ali"]]
 
 
 def test_restart_service_refreshes_unit(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
@@ -367,8 +367,8 @@ def test_restart_service_refreshes_unit(monkeypatch: pytest.MonkeyPatch, tmp_pat
     restart_service(runtime)
     assert installs == [False]
     assert ["daemon-reload"] in calls
-    assert ["restart", "octop"] in calls
-    assert calls.index(["restart", "octop"]) > calls.index(["daemon-reload"])
+    assert ["restart", "ali"] in calls
+    assert calls.index(["restart", "ali"]) > calls.index(["daemon-reload"])
 
 
 def test_restart_service_still_restarts_when_install_fails(
@@ -397,7 +397,7 @@ def test_restart_service_still_restarts_when_install_fails(
     monkeypatch.setattr(service_mod, "_wait_for_startup", lambda: None)
 
     restart_service(runtime)
-    assert ["restart", "octop"] in calls
+    assert ["restart", "ali"] in calls
 
 
 def test_ensure_nofile_dropin_caps_user_hard_limit(
@@ -478,7 +478,7 @@ def test_install_service_launchd_force_reload(
     monkeypatch.setattr(service_mod, "_run_cmd", _fake_run_cmd)
 
     install_service(runtime, force=True)
-    assert ["launchctl", "bootout", "system/octop"] in calls
+    assert ["launchctl", "bootout", "system/ali"] in calls
     assert any(cmd[:3] == ["launchctl", "bootstrap", "system"] for cmd in calls)
 
 
@@ -516,7 +516,7 @@ def test_install_service_launchd_force_reload_tolerates_unloaded(
     monkeypatch.setattr(service_mod, "_run_cmd", _fake_run_cmd)
 
     install_service(runtime, force=True)  # must not raise
-    assert any(cmd[:3] == ["launchctl", "bootout", "system/octop"] for cmd in calls)
+    assert any(cmd[:3] == ["launchctl", "bootout", "system/ali"] for cmd in calls)
     # ... and bootstrap must still run afterwards.
     assert any(cmd[:3] == ["launchctl", "bootstrap", "system"] for cmd in calls)
 
@@ -589,8 +589,8 @@ def test_launchd_domain_user_vs_system() -> None:
     """User agents run in the gui/$UID domain, system agents in system/."""
     user = launchd_domain("user")
     assert user.startswith("gui/")
-    assert user.endswith("/octop")
-    assert launchd_domain("system") == "system/octop"
+    assert user.endswith("/ali")
+    assert launchd_domain("system") == "system/ali"
 
 
 def test_launchd_bootstrap_target_must_be_qualified() -> None:
@@ -644,14 +644,14 @@ def test_unit_path_launchd_user_is_under_home(monkeypatch: pytest.MonkeyPatch) -
     monkeypatch.setenv("OCTOP_SERVICE_SCOPE", "user")
     path = unit_path("launchd")
     owner_home = Path(pwd.getpwnam(getpass.getuser()).pw_dir)
-    assert path == owner_home / "Library" / "LaunchAgents" / "octop.plist"
+    assert path == owner_home / "Library" / "LaunchAgents" / "ali.plist"
 
 
 def test_unit_path_launchd_system_is_under_library(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(service_mod, "is_root", lambda: True)
     monkeypatch.setenv("OCTOP_SERVICE_SCOPE", "system")
     path = unit_path("launchd")
-    assert path == Path("/Library/LaunchDaemons/octop.plist")
+    assert path == Path("/Library/LaunchDaemons/ali.plist")
 
 
 def test_render_launchd_plist_user_scope_omits_username(tmp_path: Path) -> None:
