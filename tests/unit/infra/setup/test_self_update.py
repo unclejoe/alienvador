@@ -11,13 +11,11 @@ from pathlib import Path
 import pytest
 
 import octop.infra.setup.self_update as self_update
-
 from octop.infra.setup.self_update import (
     UpgradeResult,
     _all_mirrors_failed,
     build_upgrade_command,
     fetch_pypi_info,
-    release_wheel_url,
     index_label,
     is_newer,
     is_prerelease,
@@ -27,6 +25,7 @@ from octop.infra.setup.self_update import (
     pick_latest_versions,
     probe_index,
     rank_install_indexes,
+    release_wheel_url,
     restore_console_scripts,
     run_upgrade,
     stash_console_scripts,
@@ -166,7 +165,9 @@ def test_release_wheel_url_matches_tag_with_and_without_v(
 
     monkeypatch.setattr("octop.infra.setup.self_update.urllib.request.urlopen", fake_urlopen)
     assert release_wheel_url("1.0.2") == "https://x/octop-1.0.2-py3-none-any.whl"
-    assert urls == [f"https://api.github.com/repos/{self_update._RELEASE_REPO}/releases/tags/v1.0.2"]
+    assert urls == [
+        f"https://api.github.com/repos/{self_update._RELEASE_REPO}/releases/tags/v1.0.2"
+    ]
 
 
 def test_build_upgrade_command_prerelease_flags(
