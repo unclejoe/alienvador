@@ -62,7 +62,7 @@ import {
 import AccountSecurityDrawer from "./AccountSecurityDrawer";
 import styles from "./AvatarDropdown.module.less";
 
-const GITHUB_URL = "https://github.com/TencentCloud/Alienvador";
+const GITHUB_URL = "https://github.com/unclejoe/alienvador";
 const HELP_FEEDBACK_URL = "https://octop.cloud";
 const APP_OAUTH_KINDS = new Set(["feishu", "dingtalk", "wecom"]);
 
