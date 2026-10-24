@@ -18,8 +18,6 @@ import {
   ChevronUp,
   Settings,
   Palette,
-  CircleHelp,
-  Github,
   KeyRound,
   Lock,
   LockOpen,
@@ -53,8 +51,6 @@ import {
 } from "../pages/Admin/Users/ProfileAvatar";
 import styles from "./AvatarDropdown.module.less";
 
-const GITHUB_URL = "https://github.com/unclejoe/alienvador";
-const HELP_FEEDBACK_URL = "https://octop.cloud";
 const APP_OAUTH_KINDS = new Set(["feishu", "dingtalk", "wecom"]);
 
 const PASSWORD_FIELD_ICON_PROPS = {
@@ -366,28 +362,6 @@ export default function AvatarDropdown({
         </div>
         <ThemeSwitcher compact />
       </div>
-
-      <a
-        className={styles.menuItem}
-        href={HELP_FEEDBACK_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={() => setMenuOpen(false)}
-      >
-        <CircleHelp size={16} strokeWidth={1.8} />
-        <span>{t("account.helpFeedback")}</span>
-      </a>
-
-      <a
-        className={styles.menuItem}
-        href={GITHUB_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={() => setMenuOpen(false)}
-      >
-        <Github size={16} strokeWidth={1.8} />
-        <span>{t("account.projectUrl")}</span>
-      </a>
 
       {onCustomizeNav ? (
         <button
