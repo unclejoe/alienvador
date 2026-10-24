@@ -33,8 +33,6 @@ import setupStyles from "../setup.module.less";
 import { enrichWizardModel } from "../../Settings/Models/wizardModelMeta";
 import {
   groupPresets,
-  isLocalPreset,
-  isOverseasPreset,
   presetLogoId,
   presetVariantLabel,
   type PresetGroup,
@@ -102,40 +100,21 @@ interface Props {
 
 type SetupMode = "preset" | "custom";
 
-/** Match admin/models: domestic cloud first; overseas + local behind "more". */
-function buildWizardPresetDisplay(presets: ProviderPreset[]): {
-  featured: PresetDisplayItem[];
-  more: PresetDisplayItem[];
-} {
+/** Build wizard preset display items (brand groups + singles), local only. */
+function buildWizardPresetDisplay(
+  presets: ProviderPreset[],
+): PresetDisplayItem[] {
   const asAdmin = (p: ProviderPreset) => p as AdminProviderPreset;
-  const featuredCloud = presets.filter(
-    (p) => !isLocalPreset(asAdmin(p)) && !isOverseasPreset(asAdmin(p)),
-  );
-  const overseasCloud = presets.filter(
-    (p) => !isLocalPreset(asAdmin(p)) && isOverseasPreset(asAdmin(p)),
-  );
-  const local = presets.filter((p) => isLocalPreset(asAdmin(p)));
-
-  const toItems = (list: ProviderPreset[]): PresetDisplayItem[] => {
-    const { grouped, ungrouped } = groupPresets(list.map(asAdmin));
-    return [
-      ...grouped.map((group): PresetDisplayItem => ({ kind: "group", group })),
-      ...ungrouped.map(
-        (preset): PresetDisplayItem => ({
-          kind: "single",
-          preset: preset as ProviderPreset,
-        }),
-      ),
-    ];
-  };
-
-  return {
-    featured: toItems(featuredCloud),
-    more: [
-      ...toItems(overseasCloud),
-      ...local.map((preset): PresetDisplayItem => ({ kind: "single", preset })),
-    ],
-  };
+  const { grouped, ungrouped } = groupPresets(presets.map(asAdmin));
+  return [
+    ...grouped.map((group): PresetDisplayItem => ({ kind: "group", group })),
+    ...ungrouped.map(
+      (preset): PresetDisplayItem => ({
+        kind: "single",
+        preset: preset as ProviderPreset,
+      }),
+    ),
+  ];
 }
 
 function defaultPresetFromItem(item: PresetDisplayItem): ProviderPreset {
@@ -165,7 +144,6 @@ export default function ModelStep({ onBack, onSkip, onContinue }: Props) {
   const [loadingPresets, setLoadingPresets] = useState(true);
   const [mode, setMode] = useState<SetupMode>("preset");
   const [selectedPresetId, setSelectedPresetId] = useState<string>("");
-  const [showAllPresets, setShowAllPresets] = useState(false);
   const [customModels, setCustomModels] = useState<CustomModelEntry[]>([]);
   const [addingCustomModel, setAddingCustomModel] = useState(false);
   const [addingPresetModel, setAddingPresetModel] = useState(false);
@@ -200,10 +178,9 @@ export default function ModelStep({ onBack, onSkip, onContinue }: Props) {
       .then((data) => {
         if (!cancelled && Array.isArray(data) && data.length > 0) {
           setPresets(data);
-          const { featured } = buildWizardPresetDisplay(data);
+          const items = buildWizardPresetDisplay(data);
           const initial =
-            (featured[0] ? defaultPresetFromItem(featured[0]) : null) ??
-            data[0];
+            (items[0] ? defaultPresetFromItem(items[0]) : null) ?? data[0];
           setSelectedPresetId(initial.id);
           const modelIds = initial.models.map((m) => m.id);
           setSelectedModelIds(modelIds);
@@ -242,18 +219,9 @@ export default function ModelStep({ onBack, onSkip, onContinue }: Props) {
     [presets, selectedPresetId],
   );
 
-  const { featuredDisplayItems, moreDisplayItems } = useMemo(() => {
-    const { featured, more } = buildWizardPresetDisplay(presets);
-    return { featuredDisplayItems: featured, moreDisplayItems: more };
-  }, [presets]);
-
-  const visibleDisplayItems = showAllPresets
-    ? [...featuredDisplayItems, ...moreDisplayItems]
-    : featuredDisplayItems;
-
-  const morePresetCount = moreDisplayItems.reduce(
-    (n, item) => n + (item.kind === "group" ? item.group.presets.length : 1),
-    0,
+  const displayItems = useMemo(
+    () => buildWizardPresetDisplay(presets),
+    [presets],
   );
 
   const isOllama = preset?.id === "ollama";
@@ -790,7 +758,7 @@ export default function ModelStep({ onBack, onSkip, onContinue }: Props) {
           </Text>
 
           <div className={setupStyles.wizardPresetGrid}>
-            {visibleDisplayItems.map((item) => {
+            {displayItems.map((item) => {
               if (item.kind === "group") {
                 const { group } = item;
                 const logoId = presetLogoId(group.presets[0]);
@@ -874,21 +842,6 @@ export default function ModelStep({ onBack, onSkip, onContinue }: Props) {
               );
             })}
           </div>
-
-          {morePresetCount > 0 && (
-            <Button
-              type="link"
-              size="small"
-              className={setupStyles.showMoreBtn}
-              onClick={() => setShowAllPresets((v) => !v)}
-            >
-              {showAllPresets
-                ? t("wizard.model.hideMorePresets")
-                : t("wizard.model.showMorePresets", {
-                    count: morePresetCount,
-                  })}
-            </Button>
-          )}
 
           <Modal
             title={

@@ -411,9 +411,9 @@ def delete_provider_offline(provider_id: int, *, home: Path | None = None) -> No
 
 
 def load_provider_presets_offline() -> list[dict[str, Any]]:
-    from octop.infra.agents.providers.presets import load_provider_presets
+    from octop.infra.agents.providers.presets import load_local_provider_presets
 
-    return load_provider_presets()
+    return load_local_provider_presets()
 
 
 def list_resolved_models_offline(*, home: Path | None = None) -> list[dict[str, Any]]:

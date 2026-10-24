@@ -139,3 +139,19 @@ def test_embedding_cloud_presets_present() -> None:
     dash_ids = {m["id"] for m in dashscope["models"]}
     assert "qwen3.7-text-embedding" in dash_ids
     assert "text-embedding-v4" in dash_ids
+
+
+def test_local_provider_presets_hide_cloud_templates() -> None:
+    """User-facing preset lists offer local runtimes only; the full bundle
+    stays available to internal runtime lookups (stream_usage / session headers)."""
+    from octop.infra.agents.providers.presets import (
+        load_local_provider_presets,
+        load_provider_presets,
+    )
+
+    local_ids = {p["id"] for p in load_local_provider_presets()}
+    assert local_ids == {"ollama", "onnx"}
+
+    full_ids = {p["id"] for p in load_provider_presets()}
+    assert "deepseek" in full_ids
+    assert "opencode-zen-openai" in full_ids

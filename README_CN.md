@@ -287,10 +287,10 @@ docker compose -f docker/docker-compose.cn.yml up -d
 bash docker/docker_build.sh
 docker run -d \
   -p 8088:8088 \
-  -v octop-data:/data/.octop \
+  -v alienvador-data:/data/.octop \
   -e HOME=/data \
   -e OCTOP_DEFAULT_PASSWORD="<自定义强密码，留空则进入设置向导>" \
-  octop:latest
+  alienvador:latest
 ```
 
 打开 `http://localhost:8088`。`OCTOP_DEFAULT_PASSWORD` 合格时首次启动会创建管理员，并把凭据写入 `/data/.octop/credential.txt`。未设置或密码被策略拒绝时不自动建账号，打开页面走设置向导（向导口令在 `/data/.octop/octop-login.txt`）。可通过 `OCTOP_ADMIN_USERNAME` 覆盖用户名。
@@ -587,6 +587,6 @@ cd dashboard && npx tsc -b
 
 感谢所有贡献者：
 
-<a href="https://github.com/tencentcloud/octop/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=tencentcloud/octop" />
+<a href="https://github.com/unclejoe/alienvador/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=unclejoe/alienvador" />
 </a>

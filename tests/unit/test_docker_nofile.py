@@ -7,19 +7,22 @@ from pathlib import Path
 import pytest
 import yaml
 
+# compose file -> app service name (fnos packaging still ships `octop`)
+COMPOSE_APP_SERVICES = {
+    "docker/docker-compose.yml": "alienvador",
+    "docker/docker-compose.cn.yml": "alienvador",
+    "docker/docker-compose.mobile.yml": "alienvador",
+    "fnos/docker/app/docker/docker-compose.yaml": "octop",
+}
+
 
 @pytest.mark.parametrize(
-    "relative_path",
-    [
-        "docker/docker-compose.yml",
-        "docker/docker-compose.cn.yml",
-        "docker/docker-compose.mobile.yml",
-        "fnos/docker/app/docker/docker-compose.yaml",
-    ],
+    "relative_path,service_name",
+    sorted(COMPOSE_APP_SERVICES.items()),
 )
-def test_octop_container_has_explicit_nofile_limit(relative_path):
+def test_octop_container_has_explicit_nofile_limit(relative_path, service_name):
     root = Path(__file__).resolve().parents[2]
     compose = yaml.safe_load((root / relative_path).read_text(encoding="utf-8"))
-    limit = compose["services"]["octop"]["ulimits"]["nofile"]
+    limit = compose["services"][service_name]["ulimits"]["nofile"]
     assert limit["soft"] >= 65535
     assert limit["hard"] >= limit["soft"]

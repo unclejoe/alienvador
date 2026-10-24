@@ -67,7 +67,7 @@ export const PERM = {
     "security_skill_scan",
     "admin_console",
   ],
-  advancedPage: ["update", "envs", "tls", "observability", "backup", "captcha"],
+  advancedPage: ["envs", "tls", "observability", "backup", "captcha"],
   experts: ["experts"],
   tasks: ["tasks"],
   tokenUsage: ["token_usage"],
@@ -135,7 +135,6 @@ export const ADVANCED_TAB_PERMISSIONS = {
   observability: "observability",
   backup: "backup",
   https: "tls",
-  updates: "update",
   captcha: "captcha",
 } as const;
 

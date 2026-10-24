@@ -6,8 +6,8 @@
 # 阶段 2: Python 运行时 + 预构建前端
 #
 # 用法（在仓库根目录执行，构建上下文为根目录）:
-#   docker build -f docker/Dockerfile -t octop:latest .
-#   docker run -d -p 8088:8088 -v octop-data:/data/.octop -e HOME=/data octop:latest
+#   docker build -f docker/Dockerfile -t alienvador:latest .
+#   docker run -d -p 8088:8088 -v alienvador-data:/data/.octop -e HOME=/data alienvador:latest
 #
 # 国内加速（可选，需 BuildKit，docker/docker_build.sh 默认已开启）:
 #   PIP_INDEX_URL=https://mirrors.cloud.tencent.com/pypi/simple \
@@ -24,7 +24,7 @@
 #     --build-arg NPM_REGISTRY=https://mirrors.cloud.tencent.com/npm/ \
 #     --build-arg APT_MIRROR=mirrors.cloud.tencent.com \
 #     --build-arg NODE_MAX_OLD_SPACE_SIZE=1024 \
-#     -t octop:latest .
+#     -t alienvador:latest .
 #
 # 或使用 Compose:
 #   docker compose -f docker/docker-compose.yml up -d

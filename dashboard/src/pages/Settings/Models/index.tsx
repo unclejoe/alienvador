@@ -5,15 +5,14 @@
  * All providers are globally available to every agent.
  *
  * Layout:
- *  1. Preset providers (from /providers/presets) — shows configured ones via
- *     ProviderCard, unconfigured ones as "click to set up" cards.
- *  2. Custom providers — any configured provider whose name doesn't match a preset.
- *  3. Embedding tab — ONNX + purpose=embedding providers (scheme A).
+ *  1. Local preset providers (from /providers/presets) — Ollama / ONNX
+ *     service cards.
+ *  2. Custom providers — any configured provider whose name doesn't match a
+ *     local preset (includes previously configured cloud providers).
  */
 import { useMemo, useState } from "react";
 import { Button, Divider, Empty, Space, Tabs, Typography } from "antd";
 import {
-  Boxes,
   Images,
   MessageSquareText,
   Mic2,
@@ -28,48 +27,35 @@ import PageShell from "../../../layouts/PageShell";
 import { useCurrentUser } from "../../../hooks/useCurrentUser";
 import { userCan } from "../../../utils/permissions";
 import { useProviders, type ProviderRow } from "./useProviders";
-import { isEmbeddingProvider } from "./useProviders";
 import {
-  groupPresets,
+  findConfiguredProvider,
   isLocalPreset,
   isPresetProvider,
-  partitionCloudPresets,
 } from "./presetUtils";
-import type { PresetGroup } from "./presetUtils";
 import type { ProviderPreset } from "./useProviders";
 import {
   CustomProviderModal,
   ActiveModelPool,
   LoadingState,
-  PresetGroupCard,
-  PresetProviderCard,
+  LocalServiceCard,
   ProviderCard,
 } from "./components";
-import { EmbeddingSettingsPanel } from "./components/EmbeddingSettingsPanel";
 import styles from "./index.module.less";
 import { MediaGenerationSettingsPanel } from "../MediaGeneration";
 import { VoiceSettingsPanel } from "../Voice";
 import { SearchSettingsPanel } from "../SearchConfig";
 import { DecisionSettingsPanel } from "./components/DecisionSettingsPanel";
 
-type ModelCategory =
-  | "chat"
-  | "embedding"
-  | "generation"
-  | "voice"
-  | "search"
-  | "decision";
+type ModelCategory = "chat" | "generation" | "voice" | "search" | "decision";
 
 function resolveModelCategory(
   requestedTab: string | null,
   canChat: boolean,
-  canEmbedding: boolean,
   canGeneration: boolean,
   canVoice: boolean,
   canSearch: boolean,
   canDecision: boolean,
 ): ModelCategory {
-  if (requestedTab === "embedding" && canEmbedding) return "embedding";
   if (requestedTab === "generation" && canGeneration) return "generation";
   if (requestedTab === "decision" && canDecision) return "decision";
   if (requestedTab === "voice" && canVoice) return "voice";
@@ -78,7 +64,6 @@ function resolveModelCategory(
     return "chat";
   }
   if (canChat) return "chat";
-  if (canEmbedding) return "embedding";
   if (canGeneration) return "generation";
   if (canVoice) return "voice";
   if (canDecision) return "decision";
@@ -98,8 +83,7 @@ export default function ModelsPage() {
   const canDecision = userCan(user, "model_decision");
   const canVoice = userCan(user, "voice");
   const canSearch = userCan(user, "search");
-  const canChat = canProviders || canOllama;
-  const canEmbedding = canProviders || canOnnx;
+  const canChat = canProviders || canOllama || canOnnx;
   const {
     providers,
     presets,
@@ -112,12 +96,10 @@ export default function ModelsPage() {
   } = useProviders();
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
-  const [showMoreProviders, setShowMoreProviders] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const modelCategory = resolveModelCategory(
     searchParams.get("tab"),
     canChat,
-    canEmbedding,
     canGeneration,
     canVoice,
     canSearch,
@@ -126,7 +108,6 @@ export default function ModelsPage() {
   const setModelCategory = (next: string) => {
     const updated = new URLSearchParams(searchParams);
     if (
-      next === "embedding" ||
       next === "generation" ||
       next === "voice" ||
       next === "search" ||
@@ -137,132 +118,38 @@ export default function ModelsPage() {
     setSearchParams(updated, { replace: true });
   };
 
-  const {
-    featured: cloudFeatured,
-    more: cloudMore,
-    moreCount: moreProvidersCount,
-  } = useMemo(
-    () =>
-      partitionCloudPresets(
-        presets.filter(
-          (p) =>
-            !isLocalPreset(p) &&
-            p.purpose !== "embedding" &&
-            p.provider_variant !== "embedding",
-        ),
-        providers,
-      ),
-    [presets, providers],
-  );
   const localPresets = useMemo(
     () =>
-      groupPresets(
-        presets.filter((p) => {
-          if (!isLocalPreset(p)) return false;
-          // ONNX lives on the embedding tab.
-          if (p.id === "onnx") return false;
-          if (p.id === "ollama") return canOllama;
-          return canOllama;
-        }),
-      ),
-    [presets, canOllama],
+      presets.filter((p) => {
+        if (!isLocalPreset(p)) return false;
+        if (p.id === "onnx") return canOnnx;
+        if (p.id === "ollama") return canOllama;
+        return canOllama || canOnnx;
+      }),
+    [presets, canOllama, canOnnx],
   );
-  const showCloudTab = canProviders;
-  const showLocalTab =
-    canOllama &&
-    (localPresets.grouped.length > 0 || localPresets.ungrouped.length > 0);
-  const showPresetSection = showCloudTab || showLocalTab;
+  const showPresetSection = (canOllama || canOnnx) && localPresets.length > 0;
 
-  const renderPresetCards = (
-    grouped: PresetGroup[],
-    singles: ProviderPreset[],
-  ) => (
-    <>
-      {grouped.map((group) => (
-        <PresetGroupCard
-          key={group.groupKey}
-          group={group}
-          providers={providers}
-          onSaved={fetchAll}
-          isHover={hoveredCard === `group-${group.groupKey}`}
-          onMouseEnter={() => setHoveredCard(`group-${group.groupKey}`)}
-          onMouseLeave={() => setHoveredCard(null)}
-        />
-      ))}
-      {singles.map((preset) => (
-        <PresetProviderCard
+  const renderPresetCards = (presets: ProviderPreset[]) => (
+    <div className={styles.providerCards}>
+      {presets.map((preset) => (
+        <LocalServiceCard
           key={preset.id}
           preset={preset}
-          providers={providers}
+          provider={findConfiguredProvider(preset, providers) ?? null}
           onSaved={fetchAll}
           isHover={hoveredCard === `preset-${preset.id}`}
           onMouseEnter={() => setHoveredCard(`preset-${preset.id}`)}
           onMouseLeave={() => setHoveredCard(null)}
         />
       ))}
-    </>
+    </div>
   );
 
-  const renderPresetGrid = (
-    grouped: PresetGroup[],
-    singles: ProviderPreset[],
-  ) => {
-    if (grouped.length === 0 && singles.length === 0) {
-      return (
-        <Empty
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={t("models.noPresetProvidersInTab")}
-        />
-      );
-    }
-    return (
-      <div className={styles.providerCards}>
-        {renderPresetCards(grouped, singles)}
-      </div>
-    );
-  };
-
-  const renderCloudPresetGrid = () => {
-    const hasFeatured =
-      cloudFeatured.grouped.length > 0 || cloudFeatured.ungrouped.length > 0;
-    const hasMore = moreProvidersCount > 0;
-    if (!hasFeatured && !hasMore) {
-      return (
-        <Empty
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={t("models.noPresetProvidersInTab")}
-        />
-      );
-    }
-    return (
-      <>
-        {(hasFeatured || showMoreProviders) && (
-          <div className={styles.providerCards}>
-            {renderPresetCards(cloudFeatured.grouped, cloudFeatured.ungrouped)}
-            {showMoreProviders &&
-              renderPresetCards(cloudMore.grouped, cloudMore.ungrouped)}
-          </div>
-        )}
-        {hasMore && (
-          <Button
-            type="link"
-            size="small"
-            className={styles.showMoreProvidersBtn}
-            onClick={() => setShowMoreProviders((v) => !v)}
-          >
-            {showMoreProviders
-              ? t("models.hideMoreProviders")
-              : t("models.showMoreProviders", { count: moreProvidersCount })}
-          </Button>
-        )}
-      </>
-    );
-  };
-
-  // Custom chat providers only — embedding-only rows live on the embedding tab.
+  // Custom providers: configured rows not already shown under a preset card
   const customProviders = useMemo<ProviderRow[]>(() => {
     return providers
-      .filter((p) => !isPresetProvider(p, presets) && !isEmbeddingProvider(p))
+      .filter((p) => !isPresetProvider(p, presets))
       .sort((a, b) => {
         if (a.enabled !== b.enabled) return a.enabled ? -1 : 1;
         return a.id - b.id;
@@ -276,7 +163,7 @@ export default function ModelsPage() {
       title={t("pageShell.models.title")}
       subtitle={t("pageShell.models.subtitle")}
       actions={
-        modelCategory === "chat" || modelCategory === "embedding" ? (
+        modelCategory === "chat" ? (
           <Space>
             <Button
               icon={<RefreshCw size={14} />}
@@ -300,19 +187,6 @@ export default function ModelsPage() {
                     <Space className={styles.modelTabLabel} size={6}>
                       <MessageSquareText size={15} />
                       {t("models.chatModelsTab")}
-                    </Space>
-                  ),
-                },
-              ]
-            : []),
-          ...(canEmbedding
-            ? [
-                {
-                  key: "embedding",
-                  label: (
-                    <Space className={styles.modelTabLabel} size={6}>
-                      <Boxes size={15} />
-                      {t("models.embeddingModelsTab")}
                     </Space>
                   ),
                 },
@@ -389,20 +263,6 @@ export default function ModelsPage() {
             )?.api_key
           }
         />
-      ) : modelCategory === "embedding" ? (
-        loading ? (
-          <LoadingState message={t("models.loadingProviders")} />
-        ) : error ? (
-          <LoadingState message={error} error onRetry={() => void fetchAll()} />
-        ) : (
-          <EmbeddingSettingsPanel
-            providers={providers}
-            presets={presets}
-            canProviders={canProviders}
-            canOnnx={canOnnx}
-            onSaved={fetchAll}
-          />
-        )
       ) : loading ? (
         <LoadingState message={t("models.loadingProviders")} />
       ) : error ? (
@@ -426,27 +286,7 @@ export default function ModelsPage() {
               <Title level={5} style={{ marginBottom: 12 }}>
                 {t("models.presetProviders")}
               </Title>
-              <Tabs
-                items={[
-                  showCloudTab
-                    ? {
-                        key: "cloud",
-                        label: t("models.presetCloud"),
-                        children: renderCloudPresetGrid(),
-                      }
-                    : null,
-                  showLocalTab
-                    ? {
-                        key: "local",
-                        label: t("models.presetLocal"),
-                        children: renderPresetGrid(
-                          localPresets.grouped,
-                          localPresets.ungrouped,
-                        ),
-                      }
-                    : null,
-                ].filter((item) => item !== null)}
-              />
+              {renderPresetCards(localPresets)}
             </>
           )}
 

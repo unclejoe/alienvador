@@ -286,13 +286,13 @@ octop_validate_password "$pw"
 # ---------------------------------------------------------------------------
 
 _STUB_OCTOP = r"""#!/usr/bin/env bash
-printf '%s\n' "$*" >> "$OCTOP_STUB_LOG"
+printf '%s\n' "$*" >> "$ALI_STUB_LOG"
 if [ "$1" = "init" ]; then
-    if [ "${OCTOP_STUB_INIT_FAIL:-0}" = "1" ]; then
+    if [ "${ALI_STUB_INIT_FAIL:-0}" = "1" ]; then
         echo "unexpected database error" >&2
         exit 1
     fi
-    if [ "${OCTOP_STUB_INIT_ALREADY_EXISTS:-0}" = "1" ]; then
+    if [ "${ALI_STUB_INIT_ALREADY_EXISTS:-0}" = "1" ]; then
         printf "  admin user 'admin' already exists, skipping.\n"
     fi
 fi
@@ -327,7 +327,7 @@ def _run_entrypoint(
             "HOME": str(home),
             "OCTOP_HOME": str(home / ".octop"),
             "PATH": str(stub_dir) + os.pathsep + env.get("PATH", ""),
-            "OCTOP_STUB_LOG": str(log),
+            "ALI_STUB_LOG": str(log),
             "OCTOP_DEFAULT_PASSWORD": "Str0ngPass1",
             "OCTOP_PORT": "8088",
         }
@@ -388,7 +388,7 @@ def test_entrypoint_adopts_existing_admin_without_rewriting_credentials(tmp_path
     credential = octop_home / "credential.txt"
     credential.write_text("ORIGINAL CREDENTIALS\n", encoding="utf-8")
 
-    result, _ = _run_entrypoint(tmp_path, extra_env={"OCTOP_STUB_INIT_ALREADY_EXISTS": "1"})
+    result, _ = _run_entrypoint(tmp_path, extra_env={"ALI_STUB_INIT_ALREADY_EXISTS": "1"})
     assert result.returncode == 0, result.stderr
     assert credential.read_text(encoding="utf-8") == "ORIGINAL CREDENTIALS\n"
     assert _init_marker(tmp_path).is_file()
@@ -400,7 +400,7 @@ def test_entrypoint_adopts_existing_admin_without_rewriting_credentials(tmp_path
 
 @bash_only
 def test_entrypoint_init_failure_leaves_no_marker_and_retries_next_boot(tmp_path: Path) -> None:
-    first, _ = _run_entrypoint(tmp_path, extra_env={"OCTOP_STUB_INIT_FAIL": "1"})
+    first, _ = _run_entrypoint(tmp_path, extra_env={"ALI_STUB_INIT_FAIL": "1"})
     assert first.returncode == 1, first.stdout
     assert not _init_marker(tmp_path).exists()
 

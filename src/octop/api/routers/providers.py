@@ -26,7 +26,7 @@ from octop.infra.agents.providers.codex_oauth import (
     request_device_code,
 )
 from octop.infra.agents.providers.model_flags import is_local_runtime_provider
-from octop.infra.agents.providers.presets import load_provider_presets
+from octop.infra.agents.providers.presets import load_local_provider_presets
 from octop.infra.agents.providers.probe import (
     fetch_openai_compatible_models,
     make_probe_provider_row,
@@ -290,8 +290,8 @@ def _row_to_dict(r: Any) -> dict[str, Any]:
 async def list_provider_presets(
     _: Any = Depends(current_user),
 ) -> list[dict[str, Any]]:
-    """Return built-in provider presets from octop-harness."""
-    return load_provider_presets()
+    """Return local preset providers (Ollama / ONNX) for configuration."""
+    return load_local_provider_presets()
 
 
 @router.get("/resolved")

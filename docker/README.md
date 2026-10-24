@@ -12,7 +12,7 @@ This directory contains the Docker build and deployment assets for Octop.
 | `../.dockerignore` | Build context ignore rules (applies to both Podman and BuildKit) |
 | `docker_build.sh` | Build image from source (BuildKit cache enabled by default) |
 | `docker-compose.yml` | One-command local / self-hosted deployment |
-| `docker-compose.cn.yml` | Same stack, pulls `ghcr.nju.edu.cn/tencentcloud/octop:latest` (no local build) |
+| `docker-compose.cn.yml` | Same stack, pulls `ghcr.nju.edu.cn/unclejoe/alienvador:latest` (no local build) |
 | `docker-compose.postgres.yml` | PostgreSQL (+ pgvector) for dual-backend dev/tests |
 | `postgres/init-vector.sql` | Instance-level `CREATE EXTENSION vector` (initdb.d; **not** Octop migrations) |
 | `docker-entrypoint.sh` | Container entrypoint: first-run init + start server |
@@ -36,12 +36,12 @@ Compose sets the open-file limit to 65535 for multi-agent workloads. Server star
 ```bash
 bash docker/docker_build.sh
 docker run -d \
-  --name octop \
+  --name alienvador \
   --ulimit nofile=65535:65535 \
   -p 8088:8088 \
-  -v octop-data:/data/.octop \
+  -v alienvador-data:/data/.octop \
   -e HOME=/data \
-  octop:latest
+  alienvador:latest
 ```
 
 ### Faster downloads (China mirrors)
@@ -88,7 +88,7 @@ image to receive these dependencies; restarting an older image is insufficient.
 ### Data persistence
 
 - Compose mounts host `~/.octop` → container `/data/.octop`
-- `docker run` example uses named volume `octop-data`
+- `docker run` example uses named volume `alienvador-data`
 - First boot: a valid `OCTOP_DEFAULT_PASSWORD` runs `octop init` and writes `credential.txt`; unset or rejected passwords skip admin creation and write the wizard unlock password to `/data/.octop/octop-login.txt`. The container does not exit because of a weak default.
 
 ### Health check
@@ -102,8 +102,8 @@ curl http://localhost:8088/api/health
 ### Operations
 
 ```bash
-docker logs -f octop
-docker exec -it octop octop --version
+docker logs -f alienvador
+docker exec -it alienvador ali --version
 docker compose -f docker/docker-compose.yml down
 docker compose -f docker/docker-compose.yml up -d --build
 ```

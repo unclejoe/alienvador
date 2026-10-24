@@ -292,7 +292,6 @@
     "advancedSettings": "Advanced Settings",
     "embedding": "Embedding",
     "tokenUsage": "Token Usage",
-    "checkUpdates": "App Updates",
     "newVersionBadge": "New version",
     "newVersionBadgeShort": "NEW",
     "admin": "Admin",
@@ -3259,11 +3258,6 @@
     "custom": "Custom",
     "builtin": "Built-in",
     "presetProviders": "Preset Providers",
-    "presetCloud": "Cloud",
-    "presetLocal": "Local",
-    "showMoreProviders": "More model providers ({{count}})",
-    "hideMoreProviders": "Show less",
-    "noPresetProvidersInTab": "No providers in this tab",
     "customProviders": "Custom Providers",
     "noCustomProvidersHint": "No custom providers yet. Click \"Add provider\" above to create one.",
     "builtinProviders": "Preset Providers",
@@ -3622,15 +3616,7 @@
     "testConnectionSuccess": "{{name}} connected{{latency}}",
     "testConnectionLatency": ", response {{time}}ms",
     "testConnectionFailed": "Test failed: {{error}}",
-    "presetProvidersDesc": "Select a provider and enter your API Key to get started",
-    "presetNotConfigured": "Not configured",
-    "setupPreset": "Configure {{name}}",
     "selectVariant": "Select {{name}} site",
-    "sites": "Sites",
-    "sitesCount": "{{count}} sites",
-    "chooseSiteFirst": "Select a site first",
-    "addSiteVariant": "Add another site",
-    "configured": "Configured",
     "presetNameExists": "A provider with this name already exists, please edit it directly",
     "sharedProviders": "Shared Providers (Admin)",
     "pleaseEnterApiKey": "Please enter API Key",
@@ -3837,41 +3823,6 @@
       "sourceConfiguredDesc": "A third-party search provider is configured, so the built-in search is no longer loaded by default, avoiding multiple search tools being exposed to the model at once."
     },
     "update": {
-      "title": "Version & Updates",
-      "description": "Check for the latest release and upgrade in place; use the guide on the right for other install methods.",
-      "panelTitle": "Version upgrade",
-      "panelDesc": "Check for a new release and install it when supported. Restart the service after a successful upgrade.",
-      "stableOnlyLabel": "Stable releases only",
-      "stableOnlyHint": "Automatic checks do not remind you about alpha, beta, rc, or dev builds. You can still check and upgrade to a pre-release manually.",
-      "prereleaseBadge": "Pre-release",
-      "prereleaseHint": "v{{version}} is a pre-release test build.",
-      "prereleaseConfirmTitle": "Upgrade to a pre-release?",
-      "prereleaseConfirmBody": "v{{version}} is a test build and may be unstable. Upgrade anyway?",
-      "prereleaseConfirmCancel": "Cancel",
-      "currentVersion": "Current Version",
-      "latestVersion": "Latest Version",
-      "checkButton": "Check for Updates",
-      "upgradeButton": "Upgrade Now",
-      "checking": "Checking...",
-      "upgrading": "Upgrading...",
-      "alreadyLatest": "You are on the latest version.",
-      "updateAvailable": "New version available",
-      "upgradeSuccess": "Upgrade completed!",
-      "upgradeFailed": "Upgrade failed",
-      "restartHint": "Please restart Alienvador for the update to take effect.",
-      "restartCommand": "Restart command",
-      "editableHint": "Development install detected. Use git pull to update.",
-      "networkError": "Could not reach update server. Check your network.",
-      "mirrorSource": "Version info served by mirror {{source}}; it may lag slightly behind pypi.org.",
-      "errors": {
-        "pypi_unreachable": "Could not reach the update source. Check your network, or the source may have no releases yet."
-      },
-      "notChecked": "Not checked yet",
-      "stageStarting": "Starting...",
-      "stageDownloading": "Downloading...",
-      "stageInstalling": "Installing...",
-      "mirrorErrorsTitle": "Per-mirror details",
-      "manualUpgradeHint": "You can also run: octop update --verbose",
       "restartServiceBtn": "Restart Service",
       "restarting": "Restarting...",
       "restartingHint": "This typically takes 1-2 minutes. Please wait.",
@@ -3881,42 +3832,7 @@
       "restartSuccess": "Restarted successfully, refreshing...",
       "restartReadyHint": "Service is back online. Refreshing shortly.",
       "restartTimeout": "Restart timed out. Run manually: octop service restart",
-      "restartFailed": "Restart request failed. Check the service and try again.",
-      "releaseNotes": "Release Notes",
-      "updateModalTitle": "New Version Available",
-      "guideTitle": "Update by install method",
-      "guideIntro": "If the one-click upgrade on the left is unavailable, pick the commands for your install method. Restart after upgrading; data stays in ~/.octop (or OCTOP_HOME).",
-      "guideDataNote": "Upgrades do not wipe local data: accounts, experts, chats and memory, skills, channels, and model settings live in the working directory. Reinstalling or updating the package keeps using that data.",
-      "guide": {
-        "ui": {
-          "title": "In-console upgrade",
-          "body": "Prefer Check for Updates and Upgrade Now on the left (package installs, not editable/source). In service mode you can Restart Service when done."
-        },
-        "installer": {
-          "title": "One-line installer",
-          "body": "If you used the official install script, re-run the same install command to upgrade in place (it reuses the environment and data under ~/.octop)."
-        },
-        "cli": {
-          "title": "CLI: octop update",
-          "body": "If the octop command is on your PATH (installer or managed venv), run:"
-        },
-        "pip": {
-          "title": "pip install",
-          "body": "If you installed into your own Python environment with pip:"
-        },
-        "source": {
-          "title": "From source",
-          "body": "For git / editable installs, in-page upgrade is disabled. Pull the latest code, build the dashboard, then reinstall:"
-        },
-        "docker": {
-          "title": "Docker",
-          "body": "Rebuild and restart the image, and keep the same data volume (~/.octop or octop-data) so nothing is lost:"
-        },
-        "restart": {
-          "title": "Restart after upgrade",
-          "body": "The new package only takes effect after the process restarts. Use the command that matches how you launched Alienvador:"
-        }
-      }
+      "restartFailed": "Restart request failed. Check the service and try again."
     }
   },
   "agentConfig": {
@@ -4123,8 +4039,6 @@
       "custom": "Custom color"
     },
     "currentVersion": "Current version v{{version}}",
-    "currentVersionAdmin": "Current version v{{version}}. Click to open Updates.",
-    "versionUpdateAvailable": "v{{current}} installed — v{{latest}} is available. Click to open Updates.",
     "versionUpdateAvailableReadonly": "v{{current}} installed — v{{latest}} is available",
     "newVersionBadge": "New version",
     "betaBadge": "Beta",
@@ -4177,7 +4091,6 @@
     "helpFeedback": "Help & Feedback",
     "helpBuilding": "Under construction",
     "projectUrl": "Project",
-    "checkUpdates": "Check for Updates",
     "username": "Username",
     "role": "Role",
     "roleAdmin": "Administrator",
@@ -5484,8 +5397,6 @@
       "skip": "Skip",
       "presetTab": "Preset provider",
       "customTab": "Custom provider",
-      "showMorePresets": "More model providers ({{count}})",
-      "hideMorePresets": "Show less",
       "choosePreset": "Choose a preset provider",
       "choosePresetHint": "Click a card to pre-fill settings — you only need to enter your API key. Multi-site brands open a site picker first.",
       "siteCount": "{{count}} sites",
