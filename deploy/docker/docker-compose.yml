@@ -12,6 +12,7 @@
 #   OCTOP_ADMIN_USERNAME=admin
 #   OCTOP_DATABASE_DRIVER=postgresql
 #   OCTOP_DATABASE_URL=postgresql://octop:octop@host.docker.internal:5432/octop
+#   OCTOP_MCP_ALLOW_HTTP=0   # 可选：收紧为公网仅 https（默认放行公网 http:// 的 MCP 连接器 URL）
 #
 # A key in deploy/docker/.env reaches the container only when listed under
 # environment below. The same keys can also live in ~/.octop/env on the
@@ -55,6 +56,7 @@ services:
       - OCTOP_DATABASE_NAME=${OCTOP_DATABASE_NAME:-}
       - OCTOP_DATABASE_USER=${OCTOP_DATABASE_USER:-}
       - OCTOP_DATABASE_PASSWORD=${OCTOP_DATABASE_PASSWORD:-}
+      - OCTOP_MCP_ALLOW_HTTP=${OCTOP_MCP_ALLOW_HTTP:-1}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - DASHSCOPE_API_KEY=${DASHSCOPE_API_KEY:-}
       - LANGFUSE_TRACING_ENABLED=${LANGFUSE_TRACING_ENABLED:-true}
