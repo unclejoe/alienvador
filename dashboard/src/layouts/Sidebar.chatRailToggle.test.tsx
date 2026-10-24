@@ -12,9 +12,6 @@ import Sidebar from "./Sidebar";
 vi.mock("../components/AvatarDropdown", () => ({
   default: () => null,
 }));
-vi.mock("../components/AppVersionBadge", () => ({
-  default: () => null,
-}));
 vi.mock("../components/CurrentVersionBadge", () => ({
   default: () => null,
 }));

@@ -17,7 +17,7 @@ from typing import Any
 
 import pytest
 
-IMAGE = os.environ.get("OCTOP_TEST_IMAGE", "octop:test")
+IMAGE = os.environ.get("ALI_TEST_IMAGE", "alienvador:test")
 READY_TIMEOUT_S = 180
 
 

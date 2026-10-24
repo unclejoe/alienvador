@@ -1,9 +1,9 @@
 """Gated PostgreSQL control-plane integration tests.
 
-Set ``OCTOP_TEST_DATABASE_URL`` to a **dedicated** database (tests DROP SCHEMA public).
+Set ``ALI_TEST_DATABASE_URL`` to a **dedicated** database (tests DROP SCHEMA public).
 Example::
 
-    export OCTOP_TEST_DATABASE_URL='postgresql://postgres:postgres@127.0.0.1:15432/octop_test'
+    export ALI_TEST_DATABASE_URL='postgresql://postgres:postgres@127.0.0.1:15432/octop_test'
 
 Avoid pointing at a shared app DB (locks from other sessions will hang resets).
 Without the env var these tests are skipped — default CI stays SQLite-only.
@@ -23,7 +23,7 @@ from tests.support.postgresql import requires_postgresql
 
 
 def _conninfo() -> str:
-    return os.environ["OCTOP_TEST_DATABASE_URL"]
+    return os.environ["ALI_TEST_DATABASE_URL"]
 
 
 def _reset_public_schema(pool: object) -> None:

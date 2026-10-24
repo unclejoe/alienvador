@@ -5,9 +5,10 @@
  * All providers are globally available to every agent.
  *
  * Layout:
- *  1. Preset providers (from /providers/presets) — shows configured ones via
- *     ProviderCard, unconfigured ones as "click to set up" cards.
- *  2. Custom providers — any configured provider whose name doesn't match a preset.
+ *  1. Local preset providers (from /providers/presets) — Ollama / ONNX
+ *     service cards.
+ *  2. Custom providers — any configured provider whose name doesn't match a
+ *     local preset (includes previously configured cloud providers).
  */
 import { useMemo, useState } from "react";
 import { Button, Divider, Empty, Space, Tabs, Typography } from "antd";
@@ -27,19 +28,16 @@ import { useCurrentUser } from "../../../hooks/useCurrentUser";
 import { userCan } from "../../../utils/permissions";
 import { useProviders, type ProviderRow } from "./useProviders";
 import {
-  groupPresets,
+  findConfiguredProvider,
   isLocalPreset,
   isPresetProvider,
-  partitionCloudPresets,
 } from "./presetUtils";
-import type { PresetGroup } from "./presetUtils";
 import type { ProviderPreset } from "./useProviders";
 import {
   CustomProviderModal,
   ActiveModelPool,
   LoadingState,
-  PresetGroupCard,
-  PresetProviderCard,
+  LocalServiceCard,
   ProviderCard,
 } from "./components";
 import styles from "./index.module.less";
@@ -94,7 +92,6 @@ export default function ModelsPage() {
   } = useProviders();
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
-  const [showMoreProviders, setShowMoreProviders] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const modelCategory = resolveModelCategory(
     searchParams.get("tab"),
@@ -116,121 +113,33 @@ export default function ModelsPage() {
     setSearchParams(updated, { replace: true });
   };
 
-  const {
-    featured: cloudFeatured,
-    more: cloudMore,
-    moreCount: moreProvidersCount,
-  } = useMemo(
-    () =>
-      partitionCloudPresets(
-        presets.filter((p) => !isLocalPreset(p)),
-        providers,
-      ),
-    [presets, providers],
-  );
   const localPresets = useMemo(
     () =>
-      groupPresets(
-        presets.filter((p) => {
-          if (!isLocalPreset(p)) return false;
-          if (p.id === "onnx") return canOnnx;
-          if (p.id === "ollama") return canOllama;
-          return canOllama || canOnnx;
-        }),
-      ),
+      presets.filter((p) => {
+        if (!isLocalPreset(p)) return false;
+        if (p.id === "onnx") return canOnnx;
+        if (p.id === "ollama") return canOllama;
+        return canOllama || canOnnx;
+      }),
     [presets, canOllama, canOnnx],
   );
-  const showCloudTab = canProviders;
-  const showLocalTab =
-    (canOllama || canOnnx) &&
-    (localPresets.grouped.length > 0 || localPresets.ungrouped.length > 0);
-  const showPresetSection = showCloudTab || showLocalTab;
+  const showPresetSection = (canOllama || canOnnx) && localPresets.length > 0;
 
-  const renderPresetCards = (
-    grouped: PresetGroup[],
-    singles: ProviderPreset[],
-  ) => (
-    <>
-      {grouped.map((group) => (
-        <PresetGroupCard
-          key={group.groupKey}
-          group={group}
-          providers={providers}
-          onSaved={fetchAll}
-          isHover={hoveredCard === `group-${group.groupKey}`}
-          onMouseEnter={() => setHoveredCard(`group-${group.groupKey}`)}
-          onMouseLeave={() => setHoveredCard(null)}
-        />
-      ))}
-      {singles.map((preset) => (
-        <PresetProviderCard
+  const renderPresetCards = (presets: ProviderPreset[]) => (
+    <div className={styles.providerCards}>
+      {presets.map((preset) => (
+        <LocalServiceCard
           key={preset.id}
           preset={preset}
-          providers={providers}
+          provider={findConfiguredProvider(preset, providers) ?? null}
           onSaved={fetchAll}
           isHover={hoveredCard === `preset-${preset.id}`}
           onMouseEnter={() => setHoveredCard(`preset-${preset.id}`)}
           onMouseLeave={() => setHoveredCard(null)}
         />
       ))}
-    </>
+    </div>
   );
-
-  const renderPresetGrid = (
-    grouped: PresetGroup[],
-    singles: ProviderPreset[],
-  ) => {
-    if (grouped.length === 0 && singles.length === 0) {
-      return (
-        <Empty
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={t("models.noPresetProvidersInTab")}
-        />
-      );
-    }
-    return (
-      <div className={styles.providerCards}>
-        {renderPresetCards(grouped, singles)}
-      </div>
-    );
-  };
-
-  const renderCloudPresetGrid = () => {
-    const hasFeatured =
-      cloudFeatured.grouped.length > 0 || cloudFeatured.ungrouped.length > 0;
-    const hasMore = moreProvidersCount > 0;
-    if (!hasFeatured && !hasMore) {
-      return (
-        <Empty
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={t("models.noPresetProvidersInTab")}
-        />
-      );
-    }
-    return (
-      <>
-        {(hasFeatured || showMoreProviders) && (
-          <div className={styles.providerCards}>
-            {renderPresetCards(cloudFeatured.grouped, cloudFeatured.ungrouped)}
-            {showMoreProviders &&
-              renderPresetCards(cloudMore.grouped, cloudMore.ungrouped)}
-          </div>
-        )}
-        {hasMore && (
-          <Button
-            type="link"
-            size="small"
-            className={styles.showMoreProvidersBtn}
-            onClick={() => setShowMoreProviders((v) => !v)}
-          >
-            {showMoreProviders
-              ? t("models.hideMoreProviders")
-              : t("models.showMoreProviders", { count: moreProvidersCount })}
-          </Button>
-        )}
-      </>
-    );
-  };
 
   // Custom providers: configured rows not already shown under a preset card
   const customProviders = useMemo<ProviderRow[]>(() => {
@@ -372,27 +281,7 @@ export default function ModelsPage() {
               <Title level={5} style={{ marginBottom: 12 }}>
                 {t("models.presetProviders")}
               </Title>
-              <Tabs
-                items={[
-                  showCloudTab
-                    ? {
-                        key: "cloud",
-                        label: t("models.presetCloud"),
-                        children: renderCloudPresetGrid(),
-                      }
-                    : null,
-                  showLocalTab
-                    ? {
-                        key: "local",
-                        label: t("models.presetLocal"),
-                        children: renderPresetGrid(
-                          localPresets.grouped,
-                          localPresets.ungrouped,
-                        ),
-                      }
-                    : null,
-                ].filter((item) => item !== null)}
-              />
+              {renderPresetCards(localPresets)}
             </>
           )}
 

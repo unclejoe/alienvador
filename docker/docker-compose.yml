@@ -21,12 +21,12 @@
 # =============================================================================
 
 services:
-  octop:
+  alienvador:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-    image: octop:latest
-    container_name: octop
+    image: alienvador:latest
+    container_name: alienvador
     restart: unless-stopped
     ulimits:
       nofile:

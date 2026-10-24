@@ -5,7 +5,7 @@
 #   # once: download platform-tools next to the repo
 #   mkdir -p .tools && cd /tmp && curl -fsSL -o pt.zip \
 #     https://dl.google.com/android/repository/platform-tools-latest-linux.zip \
-#     && unzip -qo pt.zip -d /workspace/Octop/.tools
+#     && unzip -qo pt.zip -d /workspace/alienvador/.tools
 #
 #   docker compose -f docker/docker-compose.mobile.yml up -d --build
 #
@@ -19,12 +19,12 @@
 # =============================================================================
 
 services:
-  octop:
+  alienvador:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-    image: octop:latest
-    container_name: octop
+    image: alienvador:latest
+    container_name: alienvador
     restart: unless-stopped
     ulimits:
       nofile:

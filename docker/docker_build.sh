@@ -7,8 +7,8 @@
 #
 # 示例:
 #   bash docker/docker_build.sh
-#   bash docker/docker_build.sh myreg/octop:v1
-#   bash docker/docker_build.sh octop:dev --no-cache
+#   bash docker/docker_build.sh myreg/alienvador:v1
+#   bash docker/docker_build.sh alienvador:dev --no-cache
 #
 # 国内加速（可选，需 BuildKit，本脚本默认已开启）:
 #   PIP_INDEX_URL=https://mirrors.cloud.tencent.com/pypi/simple \
@@ -22,7 +22,7 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
-IMAGE_TAG="${1:-octop:latest}"
+IMAGE_TAG="${1:-alienvador:latest}"
 shift 2>/dev/null || true
 
 # BuildKit 启用 Dockerfile 缓存挂载，加速 npm / pip / apt 下载
@@ -62,7 +62,7 @@ echo ""
 echo "✅ 构建完成: ${IMAGE_TAG}"
 echo ""
 echo "启动示例:"
-echo "  docker run -d -p 8088:8088 -v octop-data:/data/.octop -e HOME=/data ${IMAGE_TAG}"
+echo "  docker run -d -p 8088:8088 -v alienvador-data:/data/.octop -e HOME=/data ${IMAGE_TAG}"
 echo ""
 echo "或使用 Compose:"
 echo "  docker compose -f docker/docker-compose.yml up -d"

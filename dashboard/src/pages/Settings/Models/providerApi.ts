@@ -66,20 +66,3 @@ export async function fetchProviderModels(
     }),
   });
 }
-
-export async function startCodexOAuth() {
-  return request<{
-    state_id: string;
-    user_code: string;
-    verification_url: string;
-  }>("/admin/providers/codex-oauth/start", { method: "POST" });
-}
-
-export async function pollCodexOAuth(stateId: string) {
-  return request<{
-    status: string;
-    error?: string;
-    provider_id?: number;
-    provider_name?: string;
-  }>(`/admin/providers/codex-oauth/pending/${encodeURIComponent(stateId)}`);
-}

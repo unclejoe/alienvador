@@ -1,8 +1,8 @@
 # =============================================================================
 # Octop — Docker Compose（国内镜像）
 #
-# 不在本地构建。官方 GHCR（ghcr.io/tencentcloud/octop）拉取失败时用本文件，
-# 镜像来自南京大学 GHCR 源：ghcr.nju.edu.cn/tencentcloud/octop:latest
+# 不在本地构建。官方 GHCR（ghcr.io/unclejoe/alienvador）拉取失败时用本文件，
+# 镜像来自南京大学 GHCR 源：ghcr.nju.edu.cn/unclejoe/alienvador:latest
 #
 # 用法（在仓库根目录执行）:
 #   docker compose -f docker/docker-compose.cn.yml up -d
@@ -14,9 +14,9 @@
 # =============================================================================
 
 services:
-  octop:
-    image: ghcr.nju.edu.cn/tencentcloud/octop:latest
-    container_name: octop
+  alienvador:
+    image: ghcr.nju.edu.cn/unclejoe/alienvador:latest
+    container_name: alienvador
     restart: unless-stopped
     ulimits:
       nofile:

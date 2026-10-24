@@ -4,6 +4,10 @@ from __future__ import annotations
 
 from typing import Any
 
+# Alienvador only offers local runtimes as configurable presets; cloud
+# providers are configured as custom providers instead.
+LOCAL_PRESET_IDS = frozenset({"ollama", "onnx"})
+
 
 def _reasoning_profile(provider_id: str, model_id: str) -> dict[str, Any] | None:
     """Reasoning metadata for bundled models with documented request semantics."""
@@ -277,3 +281,18 @@ def load_provider_presets() -> list[dict[str, Any]]:
                 model["reasoning"] = True
                 model["reasoning_config"] = profile
     return out
+
+
+def load_local_provider_presets() -> list[dict[str, Any]]:
+    """Local-only preset templates for user-facing config surfaces (API / CLI).
+
+    Cloud preset configuration is removed from Alienvador; the full bundle from
+    :func:`load_provider_presets` stays internal so runtime lookups (stream_usage
+    defaults, OpenCode session headers) keep serving already-configured cloud
+    providers.
+    """
+    return [
+        preset
+        for preset in load_provider_presets()
+        if str(preset.get("id") or "") in LOCAL_PRESET_IDS
+    ]

@@ -474,18 +474,18 @@ uv run pytest tests/integration/test_auth_ldap.py -q
 需要 3.1 的目录在跑：
 
 ```bash
-OCTOP_LDAP_TEST_URL=ldap://127.0.0.1:3893 \
-OCTOP_LDAP_TEST_BIND_DN='uid=svc-alienvador,cn=users,dc=example,dc=org' \
-OCTOP_LDAP_TEST_BIND_PASSWORD=bindpw \
-OCTOP_LDAP_TEST_BASE_DN='dc=example,dc=org' \
-OCTOP_LDAP_TEST_ADMIN_GROUP=admin \
-OCTOP_LDAP_TEST_USER=alice \
-OCTOP_LDAP_TEST_PASSWORD=alicepw \
-OCTOP_LDAP_TEST_EXPECTED_ROLE=admin \
+ALI_LDAP_TEST_URL=ldap://127.0.0.1:3893 \
+ALI_LDAP_TEST_BIND_DN='uid=svc-alienvador,cn=users,dc=example,dc=org' \
+ALI_LDAP_TEST_BIND_PASSWORD=bindpw \
+ALI_LDAP_TEST_BASE_DN='dc=example,dc=org' \
+ALI_LDAP_TEST_ADMIN_GROUP=admin \
+ALI_LDAP_TEST_USER=alice \
+ALI_LDAP_TEST_PASSWORD=alicepw \
+ALI_LDAP_TEST_EXPECTED_ROLE=admin \
 uv run pytest tests/live/test_ldap_live.py -m live -v
 ```
 
-它经由真实 HTTP API 完成配置 → 连通性测试 → 目录登录 → `has_password=false` 校验 → 错误密码拒绝。换 `OCTOP_LDAP_TEST_USER` / `_PASSWORD` / `_EXPECTED_ROLE` 为 `bob`/`bobpw`/`user` 或 `carol`/`carolpw`/`user` 即可验证非管理员映射。缺任一环境变量则自动跳过，不会让 CI 变红。
+它经由真实 HTTP API 完成配置 → 连通性测试 → 目录登录 → `has_password=false` 校验 → 错误密码拒绝。换 `ALI_LDAP_TEST_USER` / `_PASSWORD` / `_EXPECTED_ROLE` 为 `bob`/`bobpw`/`user` 或 `carol`/`carolpw`/`user` 即可验证非管理员映射。缺任一环境变量则自动跳过，不会让 CI 变红。
 
 ### 7.4 浏览器验证要点
 

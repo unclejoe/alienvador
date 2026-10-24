@@ -267,7 +267,6 @@
     "advancedSettings": "高级设置",
     "embedding": "Embedding",
     "tokenUsage": "Token 统计",
-    "checkUpdates": "应用更新",
     "newVersionBadge": "有新版本",
     "newVersionBadgeShort": "新",
     "admin": "管理",
@@ -3206,11 +3205,6 @@
     "custom": "自定义",
     "builtin": "内置",
     "presetProviders": "预置提供商",
-    "presetCloud": "云端",
-    "presetLocal": "本地",
-    "showMoreProviders": "更多模型提供商（{{count}}）",
-    "hideMoreProviders": "收起",
-    "noPresetProvidersInTab": "暂无提供商",
     "customProviders": "自定义提供商",
     "noCustomProvidersHint": "暂无自定义提供商，点击右上角「自定义供应商」添加",
     "builtinProviders": "预置提供商",
@@ -3524,15 +3518,7 @@
     "testConnectionSuccess": "{{name}} 连接成功{{latency}}",
     "testConnectionLatency": ",响应 {{time}}ms",
     "testConnectionFailed": "测试失败:{{error}}",
-    "presetProvidersDesc": "选择提供商，输入 API Key 即可快速开始",
-    "presetNotConfigured": "未配置",
-    "setupPreset": "配置 {{name}}",
     "selectVariant": "选择 {{name}} 站点",
-    "sites": "站点",
-    "sitesCount": "{{count}} 个站点",
-    "chooseSiteFirst": "请先选择站点",
-    "addSiteVariant": "添加其他站点",
-    "configured": "已配置",
     "presetNameExists": "已有同名 provider，请直接编辑",
     "sharedProviders": "共享提供商（管理员）",
     "pleaseEnterApiKey": "请输入 API Key",
@@ -3737,41 +3723,6 @@
       "sourceConfiguredDesc": "已配置第三方搜索服务，内置搜索默认不再加载，避免多个搜索工具同时暴露给模型。"
     },
     "update": {
-      "title": "版本与更新",
-      "description": "检查最新版本，一键升级 Alienvador；右侧可按安装方式查看完整升级说明。",
-      "panelTitle": "版本升级",
-      "panelDesc": "检查是否有新版本，并在支持时一键安装。更新完成后请重启服务。",
-      "stableOnlyLabel": "只更新稳定版",
-      "stableOnlyHint": "自动检查不会提醒测试版（alpha / beta / rc / dev）。仍可手动检查并升级到测试版。",
-      "prereleaseBadge": "测试版",
-      "prereleaseHint": "v{{version}} 是测试版本。",
-      "prereleaseConfirmTitle": "升级到测试版？",
-      "prereleaseConfirmBody": "v{{version}} 是测试版本，可能不稳定。确定要升级吗？",
-      "prereleaseConfirmCancel": "取消",
-      "currentVersion": "当前版本",
-      "latestVersion": "最新版本",
-      "checkButton": "检查更新",
-      "upgradeButton": "立即升级",
-      "checking": "正在检查...",
-      "upgrading": "正在升级...",
-      "alreadyLatest": "已是最新版本。",
-      "updateAvailable": "发现新版本",
-      "upgradeSuccess": "升级完成！",
-      "upgradeFailed": "升级失败",
-      "restartHint": "请重启 Alienvador 使更新生效。",
-      "restartCommand": "重启命令",
-      "editableHint": "检测到开发版安装，请使用 git pull 更新。",
-      "networkError": "无法连接更新服务器，请检查网络。",
-      "mirrorSource": "版本信息来自镜像 {{source}}，可能略滞后于官方源。",
-      "errors": {
-        "pypi_unreachable": "无法连接更新源，请检查网络后重试；也可能是更新源还没有发布版本。"
-      },
-      "notChecked": "尚未检查",
-      "stageStarting": "启动中...",
-      "stageDownloading": "下载中...",
-      "stageInstalling": "安装中...",
-      "mirrorErrorsTitle": "各镜像详情",
-      "manualUpgradeHint": "也可手动运行：octop update --verbose",
       "restartServiceBtn": "重启服务",
       "restarting": "正在重启...",
       "restartingHint": "预计需要 1-2 分钟完成，请耐心等待",
@@ -3781,42 +3732,7 @@
       "restartSuccess": "重启成功，正在刷新页面...",
       "restartReadyHint": "服务已恢复，页面即将自动刷新。",
       "restartTimeout": "重启超时，请手动执行：octop service restart",
-      "restartFailed": "重启请求失败，请检查服务状态后重试",
-      "releaseNotes": "更新说明",
-      "updateModalTitle": "发现新版本",
-      "guideTitle": "按安装方式更新",
-      "guideIntro": "若不能使用左侧一键升级，请按你的安装方式选择下方命令。升级后请重启服务；配置与数据默认保留在 ~/.octop（或 OCTOP_HOME）。",
-      "guideDataNote": "升级不会清空本机数据：用户账号、专家、对话与记忆、技能、通道与模型配置等均保存在工作目录中，重新安装或更新软件本身即可继续使用。",
-      "guide": {
-        "ui": {
-          "title": "控制台一键升级",
-          "body": "优先使用左侧「检查更新」与「立即升级」（非源码/可编辑安装）。服务模式可在完成后点「重启服务」。"
-        },
-        "installer": {
-          "title": "一键安装脚本",
-          "body": "若你是用官方安装脚本装的，重新执行同一安装命令即可自动升级到最新版（会复用 ~/.octop 下的环境与数据）。"
-        },
-        "cli": {
-          "title": "CLI：octop update",
-          "body": "若命令行可直接使用 octop（安装脚本或 venv 布局），在终端执行："
-        },
-        "pip": {
-          "title": "pip 安装",
-          "body": "若你是用 pip 装到自己的 Python 环境，可升级包本身："
-        },
-        "source": {
-          "title": "源码安装",
-          "body": "从 Git 源码开发/editable 安装时，本页一键升级不可用。请拉取最新代码、构建控制台前端后重新安装到当前环境："
-        },
-        "docker": {
-          "title": "Docker",
-          "body": "Docker 部署请重新构建并启动镜像，并继续挂载原有数据卷（~/.octop 或 octop-data），避免丢数据："
-        },
-        "restart": {
-          "title": "升级后重启",
-          "body": "包更新完成后需要重启进程才生效。任选与你的启动方式匹配的命令："
-        }
-      }
+      "restartFailed": "重启请求失败，请检查服务状态后重试"
     }
   },
   "agentConfig": {
@@ -4022,8 +3938,6 @@
       "custom": "自定义颜色"
     },
     "currentVersion": "当前版本 v{{version}}",
-    "currentVersionAdmin": "当前版本 v{{version}}，点击查看更新",
-    "versionUpdateAvailable": "当前 v{{current}}，新版本 v{{latest}} 可用，点击前往更新",
     "versionUpdateAvailableReadonly": "当前 v{{current}}，新版本 v{{latest}} 可用",
     "newVersionBadge": "有新版本",
     "betaBadge": "Beta",
@@ -4076,7 +3990,6 @@
     "helpFeedback": "帮助与反馈",
     "helpBuilding": "正在建设中",
     "projectUrl": "项目地址",
-    "checkUpdates": "检查更新",
     "username": "用户名",
     "role": "角色",
     "roleAdmin": "管理员",
@@ -5382,8 +5295,6 @@
       "skip": "跳过",
       "presetTab": "预置提供商",
       "customTab": "自定义提供商",
-      "showMorePresets": "更多模型提供商（{{count}}）",
-      "hideMorePresets": "收起",
       "choosePreset": "选择预置提供商",
       "choosePresetHint": "点击卡片快速填入配置，只需填写 API Key。同品牌多站点会先弹出站点选择。",
       "siteCount": "{{count}} 个站点",

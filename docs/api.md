@@ -70,7 +70,7 @@ does not set these headers itself.
 | Method | Path | Auth | Notes |
 |--------|------|------|-------|
 | `GET`    | `/setup/status` | public | `{required, completed, has_admin}` |
-| `GET`    | `/setup/presets` | public | Provider templates for the wizard |
+| `GET`    | `/setup/presets` | public | Local provider templates (Ollama / ONNX) for the wizard |
 | `POST`   | `/setup/begin` | public | Begin a wizard session (no password) |
 | `POST`   | `/setup/verify-password` | public | Exchange the wizard password for a session token |
 | `GET`    | `/setup/validate-token` | public | Check a wizard session token |
@@ -293,7 +293,7 @@ an optional display label; when omitted, the server derives one from
 
 | Method | Path | Auth | Notes |
 |--------|------|------|-------|
-| `GET` | `/models/presets` | user | provider templates from `octop-harness` |
+| `GET` | `/models/presets` | user | local provider templates (Ollama / ONNX); cloud providers are configured as custom providers |
 | `GET` | `/models` | user | resolved models across enabled providers |
 | `GET` | `/models/active` | user | `{provider_name, model}` |
 | `PUT` | `/models/active` | admin | body `{provider_name, model}` |
@@ -453,7 +453,7 @@ namespace and row count; subsequent records contain table names and original row
 excluding generated search columns. PostgreSQL JSONL restore is not supported by this endpoint.
 
 To verify the PostgreSQL isolation/backup/rollback gate against a dedicated test
-database, set `OCTOP_MEMORY_MAINTENANCE_TEST_DSN` and run
+database, set `ALI_MEMORY_MAINTENANCE_TEST_DSN` and run
 `uv run pytest tests/integration/test_postgres_memory_storage.py -q`. Never point
 this gate at production: it creates test namespaces and a temporary failure trigger.
 

@@ -285,10 +285,10 @@ docker compose -f docker/docker-compose.cn.yml up -d
 bash docker/docker_build.sh
 docker run -d \
   -p 8088:8088 \
-  -v octop-data:/data/.octop \
+  -v alienvador-data:/data/.octop \
   -e HOME=/data \
   -e OCTOP_DEFAULT_PASSWORD="<strong-password-or-omit-for-setup-wizard>" \
-  octop:latest
+  alienvador:latest
 ```
 
 Open `http://localhost:8088`. A valid `OCTOP_DEFAULT_PASSWORD` creates the admin on first boot and writes credentials to `/data/.octop/credential.txt`. If it is unset or rejected by the password policy, no admin is created — complete the setup wizard (unlock password in `/data/.octop/octop-login.txt`). Override the username via `OCTOP_ADMIN_USERNAME`.
@@ -592,6 +592,6 @@ This project is licensed under the [MIT License](LICENSE).
 
 Thanks to all contributors:
 
-<a href="https://github.com/tencentcloud/octop/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=tencentcloud/octop" />
+<a href="https://github.com/unclejoe/alienvador/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=unclejoe/alienvador" />
 </a>

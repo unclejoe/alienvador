@@ -104,3 +104,19 @@ def test_load_provider_presets_integration() -> None:
 
     go_ant = next(p for p in presets if p["id"] == "opencode-go-anthropic")
     assert go_ant["base_url"] == "https://opencode.ai/zen/go"
+
+
+def test_local_provider_presets_hide_cloud_templates() -> None:
+    """User-facing preset lists offer local runtimes only; the full bundle
+    stays available to internal runtime lookups (stream_usage / session headers)."""
+    from octop.infra.agents.providers.presets import (
+        load_local_provider_presets,
+        load_provider_presets,
+    )
+
+    local_ids = {p["id"] for p in load_local_provider_presets()}
+    assert local_ids == {"ollama", "onnx"}
+
+    full_ids = {p["id"] for p in load_provider_presets()}
+    assert "deepseek" in full_ids
+    assert "opencode-zen-openai" in full_ids

@@ -229,10 +229,10 @@ docker compose -f docker/docker-compose.yml up -d
 bash docker/docker_build.sh
 docker run -d \
   -p 8088:8088 \
-  -v octop-data:/data/.octop \
+  -v alienvador-data:/data/.octop \
   -e HOME=/data \
   -e OCTOP_DEFAULT_PASSWORD=changeme \
-  octop:latest
+  alienvador:latest
 </code></pre>
 <p>完整环境变量见 <a href=".env.example">.env.example</a>：</p>
 <table>

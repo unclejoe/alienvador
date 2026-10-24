@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, Header, Request
 from pydantic import BaseModel, Field
 
 from octop.api.deps import get_server, require_database, resolve_user_from_token, sign_token
-from octop.infra.agents.providers.presets import load_provider_presets
+from octop.infra.agents.providers.presets import load_local_provider_presets
 from octop.infra.agents.providers.probe import make_probe_provider_row, probe_provider_row
 from octop.infra.errors import ErrorCode, OctopError
 from octop.infra.setup import password_file as _wizard
@@ -214,8 +214,8 @@ async def _apply_provider_draft(server: Any, draft: ProviderDraftBody) -> None:
 
 @router.get("/setup/presets", summary="List provider presets")
 async def setup_presets() -> list[dict[str, Any]]:
-    """Built-in LLM provider templates for the setup wizard (no auth required)."""
-    return load_provider_presets()
+    """Local preset providers (Ollama / ONNX) for the setup wizard (no auth required)."""
+    return load_local_provider_presets()
 
 
 @router.get("/setup/validate-token", summary="Check wizard session token")
