@@ -12,7 +12,7 @@
 | `../.dockerignore` | 构建上下文忽略规则（Podman 与 BuildKit 均适用） |
 | `docker_build.sh` | 从源码构建镜像（默认开启 BuildKit 缓存） |
 | `docker-compose.yml` | 本地开发 / 自托管一键启动 |
-| `docker-compose.cn.yml` | 同一套服务，拉取 `ghcr.nju.edu.cn/tencentcloud/octop:latest`（不本地构建） |
+| `docker-compose.cn.yml` | 同一套服务，拉取 `ghcr.nju.edu.cn/unclejoe/alienvador:latest`（不本地构建） |
 | `docker-compose.postgres.yml` | 仅 PostgreSQL（+ pgvector）开发/测试库；扩展在 `postgres/init-vector.sql` |
 | `docker-compose.cluster.yml` | 实验用：一台 PostgreSQL 加两个数据目录分开的 Octop |
 | `postgres/init-vector.sql` | 实例级 `CREATE EXTENSION vector`（initdb.d；**不**进 Octop 迁移） |
@@ -37,12 +37,12 @@ Compose 将多 agent 服务的文件描述符限制设为 65535。服务启动�
 ```bash
 bash deploy/docker/docker_build.sh
 docker run -d \
-  --name octop \
+  --name alienvador \
   --ulimit nofile=65535:65535 \
   -p 8088:8088 \
-  -v octop-data:/data/.octop \
+  -v alienvador-data:/data/.octop \
   -e HOME=/data \
-  octop:latest
+  alienvador:latest
 ```
 
 已发布标签：`ghcr.io/tencentcloud/octop:<version>` 和 `:latest` 是精简版。`:<version>-full` 和 `:full` 才带桌面、OCR 和本地向量。本地构建默认是完整版，精简版要加 `--build-arg OCTOP_IMAGE_VARIANT=lite`。
@@ -92,7 +92,7 @@ Compose 可在 `deploy/docker/.env` 中配置上述变量。注意：`.env` 只�
 ### 数据持久化
 
 - Compose 默认将宿主机 `~/.octop` 挂载到容器 `/data/.octop`
-- `docker run` 示例使用命名卷 `octop-data`
+- `docker run` 示例使用命名卷 `alienvador-data`
 - 首次启动：`OCTOP_DEFAULT_PASSWORD` 合格则执行 `octop init` 并写入 `credential.txt`；未设置或不合格则不建管理员，向导口令写入 `/data/.octop/octop-login.txt`，打开页面完成设置（容器不会因弱密码退出）。
 
 ### Kubernetes
@@ -110,8 +110,8 @@ curl http://localhost:8088/api/health
 ### 常用运维命令
 
 ```bash
-docker logs -f octop
-docker exec -it octop octop --version
+docker logs -f alienvador
+docker exec -it alienvador ali --version
 docker compose -f deploy/docker/docker-compose.yml down
 docker compose -f deploy/docker/docker-compose.yml up -d --build
 ```

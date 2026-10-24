@@ -6,8 +6,8 @@
 # 阶段 2: Python 运行时 + 预构建前端
 #
 # 用法（在仓库根目录执行，构建上下文为根目录）:
-#   docker build -f deploy/docker/Dockerfile -t octop:latest .
-#   docker run -d -p 8088:8088 --shm-size=1g -v octop-data:/data/.octop -e HOME=/data octop:latest
+#   docker build -f deploy/docker/Dockerfile -t alienvador:latest .
+#   docker run -d -p 8088:8088 --shm-size=1g -v alienvador-data:/data/.octop -e HOME=/data alienvador:latest
 #
 # --shm-size=1g 是启用远程桌面所必需的。Docker 默认 /dev/shm 只有 64MB，Xvnc 会起不来。
 # compose 文件里已经写了 shm_size: 1gb。
@@ -26,7 +26,8 @@
 #     --build-arg PIP_TRUSTED_HOST=mirrors.cloud.tencent.com \
 #     --build-arg NPM_REGISTRY=https://mirrors.cloud.tencent.com/npm/ \
 #     --build-arg APT_MIRROR=mirrors.cloud.tencent.com \
-#     -t octop:latest .
+#     --build-arg NODE_MAX_OLD_SPACE_SIZE=1024 \
+#     -t alienvador:latest .
 #
 # 内存不足 4GB 的构建机可以追加 --build-arg NODE_MAX_OLD_SPACE_SIZE=1024
 # （默认 4096，只是上限，不会预占）。

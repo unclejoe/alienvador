@@ -6,7 +6,6 @@ import {
   FileJson,
   KeyRound,
   Lock,
-  RefreshCw,
   ShieldCheck,
   Variable,
 } from "lucide-react";
@@ -14,7 +13,6 @@ import EnvironmentsPage from "../Environments";
 import { ObservabilitySettingsPanel } from "../Observability";
 import BackupRestorePanel from "../BackupRestore";
 import { HttpsSettingsPanel } from "../HttpsSettings";
-import UpdateConfig from "./UpdateConfig";
 import CaptchaSettingsPanel from "./CaptchaSettings";
 import WebauthnSettingsPanel from "./WebauthnSettings";
 import AppConfigPanel from "./AppConfigPanel";
@@ -30,7 +28,6 @@ type TabKey =
   | "observability"
   | "backup"
   | "https"
-  | "updates"
   | "captcha"
   | "webauthn"
   | "config";
@@ -43,7 +40,6 @@ const TABS: TabBarItem<TabKey>[] = [
   { key: "captcha", labelKey: "nav.loginCaptcha", icon: ShieldCheck },
   { key: "webauthn", labelKey: "nav.passkeys", icon: KeyRound },
   { key: "config", labelKey: "adminAppConfig.title", icon: FileJson },
-  { key: "updates", labelKey: "nav.checkUpdates", icon: RefreshCw },
 ];
 
 function parseTab(raw: string | null): TabKey {
@@ -51,7 +47,6 @@ function parseTab(raw: string | null): TabKey {
     raw === "observability" ||
     raw === "backup" ||
     raw === "https" ||
-    raw === "updates" ||
     raw === "captcha" ||
     raw === "webauthn" ||
     raw === "config"
@@ -91,8 +86,6 @@ export default function AdvancedSettingsPage() {
         return <BackupRestorePanel />;
       case "https":
         return <HttpsSettingsPanel />;
-      case "updates":
-        return <UpdateConfig />;
       case "captcha":
         return <CaptchaSettingsPanel />;
       case "webauthn":

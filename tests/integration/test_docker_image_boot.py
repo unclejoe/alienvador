@@ -20,7 +20,7 @@ import pytest
 
 from tests.unit.test_docker_image_arch import native_import_failed, normalized_cpu_arch
 
-IMAGE = os.environ.get("OCTOP_TEST_IMAGE", "octop:test")
+IMAGE = os.environ.get("ALI_TEST_IMAGE", "alienvador:test")
 READY_TIMEOUT_S = 180
 
 

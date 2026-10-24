@@ -2,10 +2,10 @@
 
 Run::
 
-    OCTOP_BRIDGE_LIVE=1 \\
-    OCTOP_BRIDGE_PEER_URL=https://demo.octop.chat \\
-    OCTOP_BRIDGE_PEER_USER=jubaoliang \\
-    OCTOP_BRIDGE_PEER_PASSWORD='...' \\
+    ALI_BRIDGE_LIVE=1 \\
+    ALI_BRIDGE_PEER_URL=https://demo.octop.chat \\
+    ALI_BRIDGE_PEER_USER=jubaoliang \\
+    ALI_BRIDGE_PEER_PASSWORD='...' \\
     uv run pytest tests/integration/test_bridge_live.py -m live -vv
 """
 
@@ -19,18 +19,18 @@ import pytest
 pytestmark = [
     pytest.mark.live,
     pytest.mark.skipif(
-        os.environ.get("OCTOP_BRIDGE_LIVE") != "1",
-        reason="set OCTOP_BRIDGE_LIVE=1 to hit a real peer",
+        os.environ.get("ALI_BRIDGE_LIVE") != "1",
+        reason="set ALI_BRIDGE_LIVE=1 to hit a real peer",
     ),
 ]
 
 
 def _peer_creds() -> tuple[str, str, str]:
-    url = (os.environ.get("OCTOP_BRIDGE_PEER_URL") or "").strip()
-    user = (os.environ.get("OCTOP_BRIDGE_PEER_USER") or "").strip()
-    password = os.environ.get("OCTOP_BRIDGE_PEER_PASSWORD") or ""
+    url = (os.environ.get("ALI_BRIDGE_PEER_URL") or "").strip()
+    user = (os.environ.get("ALI_BRIDGE_PEER_USER") or "").strip()
+    password = os.environ.get("ALI_BRIDGE_PEER_PASSWORD") or ""
     if not url or not user or not password:
-        pytest.skip("OCTOP_BRIDGE_PEER_URL/USER/PASSWORD required")
+        pytest.skip("ALI_BRIDGE_PEER_URL/USER/PASSWORD required")
     return url, user, password
 
 

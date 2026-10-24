@@ -23,22 +23,6 @@ export interface UpdateStatus {
   latest_is_prerelease?: boolean;
 }
 
-export interface UpgradeStarted {
-  task_id: string;
-  status: "started";
-}
-
-export interface UpgradeProgress {
-  task_id: string;
-  status: "running" | "complete" | "error";
-  stage: string | null;
-  percent: number | null;
-  new_version: string | null;
-  success: boolean | null;
-  error: string | null;
-  mirror_errors: string[] | null;
-}
-
 export interface RestartResponse {
   status: "restarting";
   service_mode: string;
@@ -46,22 +30,6 @@ export interface RestartResponse {
 
 export const updateApi = {
   getUpdateStatus: () => request<UpdateStatus>("/update/status"),
-  checkForUpdates: () =>
-    request<UpdateStatus>("/update/check", { method: "POST" }),
-  patchSettings: (stableOnly: boolean) =>
-    request<UpdateStatus & { stable_only: boolean }>("/update/settings", {
-      method: "PATCH",
-      body: JSON.stringify({ stable_only: stableOnly }),
-    }),
-  triggerUpgrade: (version?: string | null) =>
-    request<UpgradeStarted>("/update/upgrade", {
-      method: "POST",
-      body: JSON.stringify({ version: version || null }),
-    }),
-  getUpgradeProgress: (taskId: string) =>
-    request<UpgradeProgress>(
-      `/update/progress?task_id=${encodeURIComponent(taskId)}`,
-    ),
   restartService: () =>
     request<RestartResponse>("/update/restart", { method: "POST" }),
 };

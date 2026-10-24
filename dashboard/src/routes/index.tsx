@@ -244,7 +244,7 @@ export const routeConfigs: RouteConfig[] = [
   },
   {
     path: "/admin/updates",
-    element: <Navigate to="/admin/advanced?tab=updates" replace />,
+    element: <Navigate to="/admin/advanced" replace />,
   },
 
   // Legacy redirects — keeps old bookmarks working
@@ -277,7 +277,7 @@ export const routeConfigs: RouteConfig[] = [
   { path: "/agent-config", element: <AgentConfigPage /> },
   {
     path: "/updates",
-    element: <Navigate to="/admin/advanced?tab=updates" replace />,
+    element: <Navigate to="/admin/advanced" replace />,
   },
   {
     path: "/plugins",

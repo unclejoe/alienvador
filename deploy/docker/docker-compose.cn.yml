@@ -1,9 +1,9 @@
 # =============================================================================
 # Octop — Docker Compose (China image mirror)
 #
-# Does not build locally. Use this when ghcr.io/tencentcloud/octop cannot be
+# Does not build locally. Use this when ghcr.io/unclejoe/alienvador cannot be
 # pulled. The image comes from the NJU GHCR mirror:
-# ghcr.nju.edu.cn/tencentcloud/octop:latest
+# ghcr.nju.edu.cn/unclejoe/alienvador:latest
 #
 # From the repository root:
 #   docker compose -f deploy/docker/docker-compose.cn.yml up -d
@@ -16,9 +16,9 @@
 # =============================================================================
 
 services:
-  octop:
-    image: ghcr.nju.edu.cn/tencentcloud/octop:latest
-    container_name: octop
+  alienvador:
+    image: ghcr.nju.edu.cn/unclejoe/alienvador:latest
+    container_name: alienvador
     restart: unless-stopped
     ulimits:
       nofile:
