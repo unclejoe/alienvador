@@ -47,5 +47,6 @@ services:
       - OCTOP_MOBILE_ADB_HOST=${OCTOP_MOBILE_ADB_HOST:-127.0.0.1:5555}
       - OCTOP_MOBILE_CONTAINER=${OCTOP_MOBILE_CONTAINER:-octop-mobile-android}
       - OCTOP_ENABLE_MOBILE=${OCTOP_ENABLE_MOBILE:-1}
+      - OCTOP_MCP_ALLOW_HTTP=${OCTOP_MCP_ALLOW_HTTP:-1}
       - ANDROID_HOME=/opt/android-sdk
       - ANDROID_SDK_ROOT=/opt/android-sdk
