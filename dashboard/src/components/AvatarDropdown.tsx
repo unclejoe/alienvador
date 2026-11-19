@@ -42,7 +42,7 @@ import { apiErrorMessage } from "../utils/apiError";
 import { isSsoPopupMessage, openSsoPopup } from "../utils/ssoPopup";
 import { useUserRole } from "../hooks/useUserRole";
 import { useIsMobile } from "../hooks/useIsMobile";
-import AppVersionBadge from "./AppVersionBadge";
+import CurrentVersionBadge from "./CurrentVersionBadge";
 import ThemeSwitcher from "./ThemeSwitcher";
 import PaletteSwitcher from "./PaletteSwitcher";
 import type { OctopUser } from "../api/modules/auth";
@@ -689,7 +689,7 @@ export default function AvatarDropdown({
             onMouseDown={stopUpgradeEvent}
             onPointerDown={stopUpgradeEvent}
           >
-            <AppVersionBadge isMobile={isMobile} />
+            <CurrentVersionBadge isMobile={isMobile} />
           </div>
         ) : null}
       </div>

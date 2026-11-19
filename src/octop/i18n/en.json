@@ -1235,6 +1235,6 @@
     "summary": "{migrated} migrated, {skipped} skipped, {failed} failed.",
     "summary_dry_run": "{migrated} to migrate, {skipped} skipped, {failed} failed.",
     "dry_run_hint": "Dry run: nothing was written. Run again without --dry-run to apply.",
-    "restart_hint": "If `octop run` is running, restart it to load the migrated providers and channels."
+    "restart_hint": "If `ali run` is running, restart it to load the migrated providers and channels."
   }
 }
